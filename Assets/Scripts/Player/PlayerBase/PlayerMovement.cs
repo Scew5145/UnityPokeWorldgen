@@ -6,10 +6,11 @@ public class PlayerMovement : MonoBehaviour
 {
   // Collision
   private BoxCollider playerCollider;
-  const float collRayStartOffset = 0.4f;
-  const float collRayLength = 0.5f;
-  // Offset for all movement raycasts (from hitbox center). Both horizontal and vertical position
-  readonly Vector3 raycastOffset = new Vector3(0.0f, 0.1f, 0.0f); 
+  const float collRayStartOffset = 0.49f;
+  readonly static float collRayLength = 1.49f; // statically calc this to go fast 
+
+  // Offset for all movement raycasts (from hitbox center). Both horizontal and vertical position. Starting a bit above the bottom of the 1x1 cube
+  readonly static Vector3 raycastOffset = new Vector3(0.0f, 0.499f, 0.0f); 
 
   // Movement
   private Vector2 lastMoveInput = new Vector2(0, 0);
@@ -53,12 +54,10 @@ public class PlayerMovement : MonoBehaviour
     {
       move.y = wantedMovement.y > 0.0f ? 1.0f : -1.0f;
     }
-    Vector3 raycastDirection = new Vector3(move.x, 0, move.y);
+    Vector3 raycastDirection = new Vector3(move.x, 0.0f, move.y); 
     Vector3 offsetCenter = playerCollider.center + playerCollider.transform.position + raycastOffset;
-    // TODO: this needs to be a two-part raycast. Need to ensure we don't attempt to walk into "Dynamic" objects that are moving
-    // into the same space
-    Ray colliderRay = new Ray(offsetCenter + raycastDirection * collRayStartOffset, raycastDirection);
-    Debug.DrawRay(offsetCenter + raycastDirection * collRayStartOffset, raycastDirection * collRayLength, Color.blue, 1.0f);
+    Ray colliderRay = new Ray(offsetCenter, raycastDirection);
+    // Debug.DrawRay(offsetCenter, raycastDirection.normalized * collRayLength, Color.green, 1.0f, true);
 
     if (Physics.Raycast(colliderRay, out RaycastHit hit, collRayLength))
     {
@@ -79,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
       move *= runMultiplier;
     }
     distanceMoved += move;
-    string debugMessage = distanceMoved.magnitude + " " + lastMoveInput.magnitude + " | " + lastMoveInput * playerBaseSpeed;
+    // string debugMessage = distanceMoved.magnitude + " " + lastMoveInput.magnitude + " | " + lastMoveInput * playerBaseSpeed;
     if(distanceMoved.magnitude >= lastMoveInput.magnitude) 
     {
       // gone past target tile, correct to the tile for the next move, and reset to idle
@@ -93,10 +92,11 @@ public class PlayerMovement : MonoBehaviour
     gameObject.transform.position += new Vector3(move.x, 0.0f, move.y);
 
     // Vertical movement raycast for ground snapping
-    Vector3 raycastStart = playerCollider.center + playerCollider.transform.position + raycastOffset;
+    Vector3 raycastStart = playerCollider.center + playerCollider.transform.position;
     Vector3 raycastDirection = new Vector3(0.0f, -1.0f, 0.0f);
     Ray colliderRay = new Ray(raycastStart, raycastDirection);
-    if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.0f))
+    // Debug.DrawRay(raycastStart, raycastDirection, Color.red, 1.0f, true);
+    if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.5f))
     {
       // Debug.Log("hit ground " + hit.point.y);
       gameObject.transform.position = new Vector3(gameObject.transform.position.x, hit.point.y, gameObject.transform.position.z);
