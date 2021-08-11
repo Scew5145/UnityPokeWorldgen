@@ -6,9 +6,11 @@ public class PlayerMovement : MonoBehaviour
 {
   // Collision
   private BoxCollider playerCollider;
-  const float collRayStartOffset = 0.49f;
-  const float collRayLength = 1.0f;
-  
+  const float collRayStartOffset = 0.4f;
+  const float collRayLength = 0.5f;
+  // Offset for all movement raycasts (from hitbox center). Both horizontal and vertical position
+  readonly Vector3 raycastOffset = new Vector3(0.0f, 0.1f, 0.0f); 
+
   // Movement
   private Vector2 lastMoveInput = new Vector2(0, 0);
   private Vector2 distanceMoved = new Vector2(0, 0);
@@ -51,15 +53,14 @@ public class PlayerMovement : MonoBehaviour
     {
       move.y = wantedMovement.y > 0.0f ? 1.0f : -1.0f;
     }
-    RaycastHit hit;
-    
     Vector3 raycastDirection = new Vector3(move.x, 0, move.y);
-    Vector3 offsetCenter = playerCollider.center + playerCollider.transform.position;
-    
+    Vector3 offsetCenter = playerCollider.center + playerCollider.transform.position + raycastOffset;
+    // TODO: this needs to be a two-part raycast. Need to ensure we don't attempt to walk into "Dynamic" objects that are moving
+    // into the same space
     Ray colliderRay = new Ray(offsetCenter + raycastDirection * collRayStartOffset, raycastDirection);
-    // Debug.DrawRay(offsetCenter + raycastDirection * collRayStartOffset, raycastDirection * collRayLength, Color.blue, 1.0f);
+    Debug.DrawRay(offsetCenter + raycastDirection * collRayStartOffset, raycastDirection * collRayLength, Color.blue, 1.0f);
 
-    if (Physics.Raycast(colliderRay, out hit, collRayLength))
+    if (Physics.Raycast(colliderRay, out RaycastHit hit, collRayLength))
     {
       // TODO: BUMP STATE HERE
       return;
@@ -90,12 +91,23 @@ public class PlayerMovement : MonoBehaviour
     }
 
     gameObject.transform.position += new Vector3(move.x, 0.0f, move.y);
+
+    // Vertical movement raycast for ground snapping
+    Vector3 raycastStart = playerCollider.center + playerCollider.transform.position + raycastOffset;
+    Vector3 raycastDirection = new Vector3(0.0f, -1.0f, 0.0f);
+    Ray colliderRay = new Ray(raycastStart, raycastDirection);
+    if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.0f))
+    {
+      // Debug.Log("hit ground " + hit.point.y);
+      gameObject.transform.position = new Vector3(gameObject.transform.position.x, hit.point.y, gameObject.transform.position.z);
+    }
+    
   }
 
   void RoundPosition()
   {
     gameObject.transform.position = new Vector3(Mathf.Round(gameObject.transform.position.x),
-                                                Mathf.Round(gameObject.transform.position.y),
+                                                gameObject.transform.position.y,
                                                 Mathf.Round(gameObject.transform.position.z));
   }
 }
