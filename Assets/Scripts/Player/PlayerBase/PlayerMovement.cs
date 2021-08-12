@@ -10,12 +10,12 @@ public class PlayerMovement : MonoBehaviour
   readonly static float collRayLength = 1.49f; // statically calc this to go fast 
 
   // Offset for all movement raycasts (from hitbox center). Both horizontal and vertical position. Starting a bit above the bottom of the 1x1 cube
-  readonly static Vector3 raycastOffset = new Vector3(0.0f, 0.499f, 0.0f); 
-
+  readonly static Vector3 raycastOffset = new Vector3(0.0f, 0.499f, 0.0f);
+  public OverworldMoveAnimate movementAnimationComponent;
   // Movement
   private Vector2 lastMoveInput = new Vector2(0, 0);
   private Vector2 distanceMoved = new Vector2(0, 0);
-  private float playerBaseSpeed = 4.0f;
+  private float playerBaseSpeed = 3.0f;
   private float runMultiplier = 2.0f;
 
   enum MovementState { Idle, Moving, Running };
@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
     
     if (MoveState != MovementState.Idle)
     {
+      movementAnimationComponent.SetMoveState(OverworldMoveAnimate.OverworldMoveState.Moving);
       DoMove();
       return;
     }
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     MovementState wantedState = wantedMovement == Vector2.zero ? MovementState.Idle : MovementState.Moving;
     if(wantedState == MovementState.Idle)
     {
+      movementAnimationComponent.SetMoveState(OverworldMoveAnimate.OverworldMoveState.Idle);
       return;
     }
     // If the B button is pressed, while wanting to move
@@ -49,10 +51,12 @@ public class PlayerMovement : MonoBehaviour
     if (wantedMovement.x != 0.0f)
     {
       move.x = wantedMovement.x > 0.0f ? 1.0f : -1.0f;
+      movementAnimationComponent.SetDirection(move.x < 0.0f ? OverworldMoveAnimate.EFacingDirection.Left : OverworldMoveAnimate.EFacingDirection.Right);
     }
     else
     {
       move.y = wantedMovement.y > 0.0f ? 1.0f : -1.0f;
+      movementAnimationComponent.SetDirection(move.y < 0.0f ? OverworldMoveAnimate.EFacingDirection.Down : OverworldMoveAnimate.EFacingDirection.Up);
     }
     Vector3 raycastDirection = new Vector3(move.x, 0.0f, move.y); 
     Vector3 offsetCenter = playerCollider.center + playerCollider.transform.position + raycastOffset;
@@ -61,6 +65,8 @@ public class PlayerMovement : MonoBehaviour
 
     if (Physics.Raycast(colliderRay, out RaycastHit hit, collRayLength))
     {
+      // TEMP: wantedstate to idle to stop player from looping walk
+      movementAnimationComponent.SetMoveState(OverworldMoveAnimate.OverworldMoveState.Idle);
       // TODO: BUMP STATE HERE
       return;
     }
