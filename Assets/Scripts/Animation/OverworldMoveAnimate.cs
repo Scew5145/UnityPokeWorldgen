@@ -21,6 +21,12 @@ using UnityEngine;
  *    A2 = mS1 | A5 = mS2 | A9 : mS6 | A10 : mS7 | A11 : mS8
 */
 
+/*
+ * Using this Class:
+ * Whatever controls the animation should only make calls to SetMoveState. SpriteAnimation is public, so use it in other animator classes if you need non-moving
+ * animations. As far as I know, outside of the Player, there's very few objects that should have moving sprite animations extended beyond walk/idle.
+ */
+
 public struct SpriteAnimation
 {
   public readonly List<KeyValuePair<float, int>> Keyframes;
@@ -36,7 +42,7 @@ public struct SpriteAnimation
 
 public class OverworldMoveAnimate : MonoBehaviour
 {
-  public enum OverworldMoveState
+  public enum EOverworldMoveState
   {
     Idle,
     Moving,
@@ -58,19 +64,22 @@ public class OverworldMoveAnimate : MonoBehaviour
   public Texture2D spriteSheet;
   protected SpriteRenderer sRenderer;
   public bool isSymmetric = false;
-  protected OverworldMoveState moveState = OverworldMoveState.Idle;
-  protected OverworldMoveState lastMoveState = OverworldMoveState.Idle;
-  public EFacingDirection direction = EFacingDirection.Up;
+  protected EOverworldMoveState moveState = EOverworldMoveState.Idle;
+  protected EOverworldMoveState lastMoveState = EOverworldMoveState.Idle;
+  protected EFacingDirection direction = EFacingDirection.Up;
   protected EFacingDirection lastDirection = EFacingDirection.Up;
   protected int currentFrame = 0;
   protected float currentTime = 0.0f;
   protected float nextTime = 0.0f;
-  protected Sprite[] sprites;
+  protected Sprite[] walkSprites;
 
-  public void SetMoveState(OverworldMoveState inMoveState)
+  public void SetMoveState(EOverworldMoveState inMoveState)
   {
     if(moveState != inMoveState)
     {
+      currentFrame = 0;
+      currentTime = 0.0f;
+      nextTime = 0.0f;
       // Debug.Log(inMoveState);
       moveState = inMoveState;
     }
@@ -92,43 +101,42 @@ public class OverworldMoveAnimate : MonoBehaviour
     new KeyValuePair<float, int>((15.0f/30.0f), 2),
   }, 20.0f / 30.0f);
 
-  private void Start()
+  protected void Start()
   {
-    sprites = Resources.LoadAll<Sprite>(spriteSheet.name);
+    walkSprites = Resources.LoadAll<Sprite>(spriteSheet.name);
     sRenderer = GetComponent<SpriteRenderer>();
   }
 
   // Update is called once per frame
-  void Update()
+  void LateUpdate()
   {
-    if(moveState != lastMoveState)
+    lastDirection = direction;
+    lastMoveState = moveState;
+    DoAnimation();
+  }
+
+  protected virtual void DoAnimation()
+  {
+    switch (moveState)
     {
-      currentFrame = 0;
-      currentTime = 0.0f;
-      nextTime = 0.0f;
-    }
-    switch(moveState)
-    {
-      case OverworldMoveState.Idle: // Idle state is simple, can be optimized as just having a single movement
+      case EOverworldMoveState.Idle: // Idle state is simple, can be optimized as just having a single movement
         if (moveState == lastMoveState && lastDirection == direction)
         {
           break;
         }
         else
         {
-          sRenderer.sprite = sprites[3 * (int)direction];
+          sRenderer.sprite = walkSprites[3 * (int)direction];
         }
         break;
-      case OverworldMoveState.Moving:
+      case EOverworldMoveState.Moving:
         int spIndex = GetSpriteIndex(WalkBase, direction);
-        sRenderer.sprite = sprites[spIndex];
+        sRenderer.sprite = walkSprites[spIndex];
         break;
     }
-    lastDirection = direction;
-    lastMoveState = moveState;
   }
 
-  int GetSpriteIndex(SpriteAnimation spriteAnim, EFacingDirection directionToGet)
+  protected int GetSpriteIndex(SpriteAnimation spriteAnim, EFacingDirection directionToGet)
   {
     if(spriteAnim.Keyframes.Count == 0)
     {
