@@ -28,7 +28,8 @@ public class OverworldMoveAnimatePlayer : OverworldMoveAnimate
         sRenderer.sprite = walkSprites[3 * (int)direction];
         break;
       case EOverworldMoveState.Moving:
-        sRenderer.sprite = walkSprites[GetSpriteIndex(WalkBase, direction)];
+        int spIndex = GetSpriteIndex(WalkBase, direction);
+        sRenderer.sprite = walkSprites[spIndex];
         break;
       case EOverworldMoveState.Running:
         sRenderer.sprite = runSprites[GetSpriteIndex(RunBase, direction)];

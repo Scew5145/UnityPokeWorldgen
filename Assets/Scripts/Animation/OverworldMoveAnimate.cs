@@ -23,8 +23,10 @@ using UnityEngine;
 
 /*
  * Using this Class:
- * Whatever controls the animation should only make calls to SetMoveState. SpriteAnimation is public, so use it in other animator classes if you need non-moving
- * animations. As far as I know, outside of the Player, there's very few objects that should have moving sprite animations extended beyond walk/idle.
+ * Whatever controls the animation should only make calls to SetMoveState. SpriteAnimation is public, 
+ * so use it in other animator classes if you need non-moving animations. As far as I know, outside of the Player, 
+ * there's very few objects that should have moving sprite animations extended beyond walk/idle.
+ *  
  */
 
 public struct SpriteAnimation
@@ -60,7 +62,7 @@ public class OverworldMoveAnimate : MonoBehaviour
     Left,
     Right
   }
-  
+
   public Texture2D spriteSheet;
   protected SpriteRenderer sRenderer;
   public bool isSymmetric = false;
@@ -75,7 +77,7 @@ public class OverworldMoveAnimate : MonoBehaviour
 
   public void SetMoveState(EOverworldMoveState inMoveState)
   {
-    if(moveState != inMoveState)
+    if (moveState != inMoveState)
     {
       currentFrame = 0;
       currentTime = 0.0f;
@@ -87,11 +89,27 @@ public class OverworldMoveAnimate : MonoBehaviour
 
   public void SetDirection(EFacingDirection inDirection)
   {
-    if(direction != inDirection)
+    if (direction != inDirection)
     {
       direction = inDirection;
     }
   }
+
+  protected static Dictionary<int, KeyValuePair<int, bool>> SymmetricIndexMap = new Dictionary<int, KeyValuePair<int, bool>>
+  {
+    { 0, new KeyValuePair<int, bool>(0, false) },
+    { 1, new KeyValuePair<int, bool>(1, false) },
+    { 2, new KeyValuePair<int, bool>(1, true) },
+    { 3, new KeyValuePair<int, bool>(2, false) },
+    { 4, new KeyValuePair<int, bool>(3, false) },
+    { 5, new KeyValuePair<int, bool>(3, true) },
+    { 6, new KeyValuePair<int, bool>(4, false) },
+    { 7, new KeyValuePair<int, bool>(5, false) },
+    { 8, new KeyValuePair<int, bool>(6, false) },
+    { 9, new KeyValuePair<int, bool>(4, true) },
+    { 10, new KeyValuePair<int, bool>(5, true) },
+    { 11, new KeyValuePair<int, bool>(6, true) }
+  };
 
   protected static SpriteAnimation WalkBase = new SpriteAnimation(new List<KeyValuePair<float, int>>
   {
@@ -126,12 +144,30 @@ public class OverworldMoveAnimate : MonoBehaviour
         }
         else
         {
-          sRenderer.sprite = walkSprites[3 * (int)direction];
+          if(isSymmetric)
+          {
+            KeyValuePair<int, bool> spriteInfo = SymmetricIndexMap[3 * (int)direction];
+            sRenderer.sprite = walkSprites[spriteInfo.Key];
+            sRenderer.flipX = spriteInfo.Value;
+          }
+          else
+          {
+            sRenderer.sprite = walkSprites[3 * (int)direction];
+          }
         }
         break;
       case EOverworldMoveState.Moving:
         int spIndex = GetSpriteIndex(WalkBase, direction);
-        sRenderer.sprite = walkSprites[spIndex];
+        if (isSymmetric)
+        {
+          KeyValuePair<int, bool> spriteInfo = SymmetricIndexMap[spIndex];
+          sRenderer.sprite = walkSprites[spriteInfo.Key];
+          sRenderer.flipX = spriteInfo.Value;
+        }
+        else
+        {
+          sRenderer.sprite = walkSprites[spIndex];
+        }
         break;
     }
   }

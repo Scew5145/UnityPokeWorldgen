@@ -2,61 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MovementBase
 {
-  // Collision
-  private BoxCollider playerCollider;
-  const float collRayStartOffset = 0.49f;
-  readonly static float collRayLength = 1.49f; // statically calc this to go fast 
-
-  // Offset for all movement raycasts (from hitbox center). Both horizontal and vertical position. Starting a bit above the bottom of the 1x1 cube
-  readonly static Vector3 raycastOffset = new Vector3(0.0f, 0.499f, 0.0f);
-  public OverworldMoveAnimate movementAnimationComponent;
-
-  // Movement
-  private Vector2 lastMoveInput = new Vector2(1.0f, 0.0f);
-  private Vector2 distanceMoved = new Vector2(0, 0);
-  private float playerBaseSpeed = 3.0f;
-  private float runMultiplier = 2.0f;
-
   //Bumped State
   private readonly float bumpedCooldown = 1.0f/3.0f;
   private float timeSinceLastBump = 0.0f;
-  private Vector2 lastBumpDirection = new Vector2(0, 0);
   private bool movedSinceLastBump = true;
-  enum EMovementState { Idle, Moving, Running, Bumped };
-  EMovementState MoveState = EMovementState.Idle;
-  EMovementState lastMoveState = EMovementState.Idle;
-  private void Start()
-  {
-    playerCollider = gameObject.GetComponent<BoxCollider>();
-    playerCollider.isTrigger = false;
-  }
 
-  void Update()
+  new protected void Start()
   {
-    lastMoveState = MoveState;
-    HandleMovement();
-    if(lastMoveState != MoveState && MoveState != EMovementState.Idle)
-    {
-      movementAnimationComponent.SetMoveState(GetAnimMoveState());
-    }
-    else if(MoveState == EMovementState.Idle && lastMoveState == EMovementState.Idle)
-    {
-      // Wait an extra frame to return to idle, so that we don't tear while running
-      movementAnimationComponent.SetMoveState(GetAnimMoveState());
-    }
-    if (lastMoveInput.x != 0)
-    {
-      movementAnimationComponent.SetDirection(lastMoveInput.x < 0.0f ? OverworldMoveAnimate.EFacingDirection.Left : OverworldMoveAnimate.EFacingDirection.Right);
-    }
-    else
-    {
-      movementAnimationComponent.SetDirection(lastMoveInput.y < 0.0f ? OverworldMoveAnimate.EFacingDirection.Down : OverworldMoveAnimate.EFacingDirection.Up);
-    }
+    moveMultiplier = 2.0f;
+    base.Start();
   }
-
-  private OverworldMoveAnimate.EOverworldMoveState GetAnimMoveState()
+  protected override OverworldMoveAnimate.EOverworldMoveState GetAnimMoveState()
   {
     switch(MoveState)
     {
@@ -68,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     return OverworldMoveAnimate.EOverworldMoveState.Idle;
   }
 
-  void HandleMovement()
+  protected override void HandleMovement()
   {
     if(MoveState == EMovementState.Bumped)
     {
@@ -106,17 +64,11 @@ public class PlayerMovement : MonoBehaviour
     {
       move.y = wantedMovement.y > 0.0f ? 1.0f : -1.0f;
     }
-
-    Vector3 raycastDirection = new Vector3(move.x, 0.0f, move.y);
-    Vector3 offsetCenter = playerCollider.center + playerCollider.transform.position + raycastOffset;
-    Ray colliderRay = new Ray(offsetCenter, raycastDirection);
-    // Debug.DrawRay(offsetCenter, raycastDirection.normalized * collRayLength, Color.green, 1.0f, true);
-
-    if (Physics.Raycast(colliderRay, out RaycastHit hit, collRayLength))
+    RaycastHit hit = CheckMovement(move);
+    if (hit.collider != null)
     {
       if (movedSinceLastBump)
       {
-        lastBumpDirection = move;
         wantedState = EMovementState.Bumped;
         timeSinceLastBump = bumpedCooldown;
         movedSinceLastBump = false;
@@ -135,16 +87,16 @@ public class PlayerMovement : MonoBehaviour
     MoveState = wantedState;
   }
 
-  void DoMove()
+  protected override void DoMove()
   {
-    Vector2 move = lastMoveInput * Time.deltaTime * playerBaseSpeed;
+    Vector2 move = lastMoveInput * Time.deltaTime * baseSpeed;
     if (MoveState == EMovementState.Moving && Input.GetAxis("Deny") != 0.0f)
     {
       MoveState = EMovementState.Running;
     }
     if (MoveState == EMovementState.Running)
     {
-      move *= runMultiplier;
+      move *= moveMultiplier;
     }
     distanceMoved += move;
     // string debugMessage = distanceMoved.magnitude + " " + lastMoveInput.magnitude + " | " + lastMoveInput * playerBaseSpeed;
@@ -161,7 +113,7 @@ public class PlayerMovement : MonoBehaviour
     gameObject.transform.position += new Vector3(move.x, 0.0f, move.y);
 
     // Vertical movement raycast for ground snapping
-    Vector3 raycastStart = playerCollider.center + playerCollider.transform.position;
+    Vector3 raycastStart = baseCollider.center + baseCollider.transform.position;
     Vector3 raycastDirection = new Vector3(0.0f, -1.0f, 0.0f);
     Ray colliderRay = new Ray(raycastStart, raycastDirection);
     // Debug.DrawRay(raycastStart, raycastDirection, Color.red, 1.0f, true);
@@ -171,12 +123,5 @@ public class PlayerMovement : MonoBehaviour
       gameObject.transform.position = new Vector3(gameObject.transform.position.x, hit.point.y, gameObject.transform.position.z);
     }
     
-  }
-
-  void RoundPosition()
-  {
-    gameObject.transform.position = new Vector3(Mathf.Round(gameObject.transform.position.x),
-                                                gameObject.transform.position.y,
-                                                Mathf.Round(gameObject.transform.position.z));
   }
 }

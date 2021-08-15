@@ -199,12 +199,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 3494101460800363605}
     m_Modifications:
     - target: {fileID: 7070608830478626, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -4702803027925677585, guid: b0ea6c0db96b2c24fafc90e82f5faba5, type: 3}
+    - target: {fileID: 7070608830478626, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 471f5ef99ff8fe847bd1e31fb3434f19, type: 2}
     - target: {fileID: 2319621640436223332, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2319621640436223332, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.9
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 7881266713855597443, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
       propertyPath: m_RootOrder

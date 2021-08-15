@@ -1,43 +1,28 @@
 fileFormatVersion: 2
-guid: a11b3321fdce6d94a829dcf257204679
+guid: 526ff3de2fa5ab24f9124b3e5eb5a4a5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9198764690328260029
-    second: Player_Male_Run_0
+      213: 8464405508602171586
+    second: Lass_Walk_0
   - first:
-      213: 7688586534921008104
-    second: Player_Male_Run_1
+      213: -6658669176794063018
+    second: Lass_Walk_1
   - first:
-      213: -8727954817687722302
-    second: Player_Male_Run_2
+      213: 1232550281237867954
+    second: Lass_Walk_2
   - first:
-      213: 847329861491039934
-    second: Player_Male_Run_3
+      213: -9133835516761556170
+    second: Lass_Walk_3
   - first:
-      213: 6103936492892276653
-    second: Player_Male_Run_4
+      213: 6413784235149516327
+    second: Lass_Walk_4
   - first:
-      213: 5829591381219099633
-    second: Player_Male_Run_5
+      213: -3673170885483341521
+    second: Lass_Walk_5
   - first:
-      213: 7069161178580496982
-    second: Player_Male_Run_6
-  - first:
-      213: 2892671008248114614
-    second: Player_Male_Run_7
-  - first:
-      213: -3788988857314406136
-    second: Player_Male_Run_8
-  - first:
-      213: -3619434712415601639
-    second: Player_Male_Run_9
-  - first:
-      213: 3944777817336793791
-    second: Player_Male_Run_10
-  - first:
-      213: 7530609411898343545
-    second: Player_Male_Run_11
+      213: -6631432562706527629
+    second: Lass_Walk_6
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -73,7 +58,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -104,7 +89,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -116,7 +101,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -127,133 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Player_Male_Run_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 96
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 342f394504c675080800000000000000
-      internalID: -9198764690328260029
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player_Male_Run_1
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 96
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8e371d6b7b853ba60800000000000000
-      internalID: 7688586534921008104
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player_Male_Run_2
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 96
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2c66014065310e680800000000000000
-      internalID: -8727954817687722302
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player_Male_Run_3
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 64
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ebe11c9050252cb00800000000000000
-      internalID: 847329861491039934
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player_Male_Run_4
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 64
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: da7436676e985b450800000000000000
-      internalID: 6103936492892276653
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player_Male_Run_5
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 64
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1f34e37897ed6e050800000000000000
-      internalID: 5829591381219099633
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player_Male_Run_6
+      name: Lass_Walk_0
       rect:
         serializedVersion: 2
         x: 0
@@ -267,14 +126,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 652b54d43a4ba1260800000000000000
-      internalID: 7069161178580496982
+      spriteID: 2c09717b6fb977570800000000000000
+      internalID: 8464405508602171586
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Male_Run_7
+      name: Lass_Walk_1
       rect:
         serializedVersion: 2
         x: 32
@@ -288,14 +147,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6bd23bab4f4d42820800000000000000
-      internalID: 2892671008248114614
+      spriteID: 65fd850b9a7a793a0800000000000000
+      internalID: -6658669176794063018
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Male_Run_8
+      name: Lass_Walk_2
       rect:
         serializedVersion: 2
         x: 64
@@ -309,14 +168,35 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8019cdd85beca6bc0800000000000000
-      internalID: -3788988857314406136
+      spriteID: 2bdadf053f5ea1110800000000000000
+      internalID: 1232550281237867954
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Male_Run_9
+      name: Lass_Walk_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63bb49a9df81e3180800000000000000
+      internalID: -9133835516761556170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lass_Walk_4
       rect:
         serializedVersion: 2
         x: 0
@@ -330,14 +210,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 91cffbe3e4f25cdc0800000000000000
-      internalID: -3619434712415601639
+      spriteID: 72e561ab7c6520950800000000000000
+      internalID: 6413784235149516327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Male_Run_10
+      name: Lass_Walk_5
       rect:
         serializedVersion: 2
         x: 32
@@ -351,14 +231,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fba4338468aaeb630800000000000000
-      internalID: 3944777817336793791
+      spriteID: f29557b7a86460dc0800000000000000
+      internalID: -3673170885483341521
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Male_Run_11
+      name: Lass_Walk_6
       rect:
         serializedVersion: 2
         x: 64
@@ -372,8 +252,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9700a6a7c59128860800000000000000
-      internalID: 7530609411898343545
+      spriteID: 37a4be3183b68f3a0800000000000000
+      internalID: -6631432562706527629
       vertices: []
       indices: 
       edges: []
@@ -381,7 +261,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 17abfa46716e51847bbd7e37298d5b8f
+    spriteID: 248e9aedc64cd074fb4a978533880979
     internalID: 0
     vertices: []
     indices: 
