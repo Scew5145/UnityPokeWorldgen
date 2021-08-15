@@ -8,7 +8,19 @@ public class PlayerMovement : MovementBase
   private readonly float bumpedCooldown = 1.0f/3.0f;
   private float timeSinceLastBump = 0.0f;
   private bool movedSinceLastBump = true;
-
+  protected override void ExtendHitbox()
+  {
+    if (MoveState == EMovementState.Idle || MoveState == EMovementState.Bumped)
+    {
+      baseCollider.size = new Vector3(1.0f, 1.6f, 1.0f); // 1.5f in y so that things transitioning from stairs will hit us, but not if we're 1 block below
+      baseCollider.center = new Vector3(0.0f, 0.8f, 0.0f);
+    }
+    else
+    {
+      baseCollider.size = new Vector3(1.0f + Mathf.Abs(lastMoveInput.x), 2.0f, 1.0f + Mathf.Abs(lastMoveInput.y));
+      baseCollider.center = new Vector3(-distanceMoved.x + lastMoveInput.x * 0.5f, 1.0f, -distanceMoved.y + lastMoveInput.y * 0.5f);
+    }
+  }
   new protected void Start()
   {
     moveMultiplier = 2.0f;
@@ -111,15 +123,13 @@ public class PlayerMovement : MovementBase
     }
 
     gameObject.transform.position += new Vector3(move.x, 0.0f, move.y);
-
     // Vertical movement raycast for ground snapping
-    Vector3 raycastStart = baseCollider.center + baseCollider.transform.position;
-    Vector3 raycastDirection = new Vector3(0.0f, -1.0f, 0.0f);
+    Vector3 raycastStart = gameObject.transform.position + raycastOffset;
+    Vector3 raycastDirection = new Vector3(0.0f, -1.5f, 0.0f);
     Ray colliderRay = new Ray(raycastStart, raycastDirection);
-    // Debug.DrawRay(raycastStart, raycastDirection, Color.red, 1.0f, true);
+    //Debug.DrawRay(raycastStart, raycastDirection, Color.red, 1.0f, true);
     if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.5f))
     {
-      // Debug.Log("hit ground " + hit.point.y);
       gameObject.transform.position = new Vector3(gameObject.transform.position.x, hit.point.y, gameObject.transform.position.z);
     }
     

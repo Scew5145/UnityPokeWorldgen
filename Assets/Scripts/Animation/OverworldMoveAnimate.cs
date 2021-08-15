@@ -128,9 +128,9 @@ public class OverworldMoveAnimate : MonoBehaviour
   // Update is called once per frame
   void LateUpdate()
   {
+    DoAnimation();
     lastDirection = direction;
     lastMoveState = moveState;
-    DoAnimation();
   }
 
   protected virtual void DoAnimation()
