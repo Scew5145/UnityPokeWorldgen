@@ -43,10 +43,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 130840853547718353}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d638bdafd8b08842ac55aa5e90a1c16, type: 3}
+  m_Script: {fileID: 11500000, guid: 31e14c221c3cd4b48890ed60c089bdaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementAnimationComponent: {fileID: 3609595312563756423}
+  spriteSheet: {fileID: 2800000, guid: b0ea6c0db96b2c24fafc90e82f5faba5, type: 3}
+  isSymmetric: 0
+  runSpriteSheet: {fileID: 2800000, guid: a11b3321fdce6d94a829dcf257204679, type: 3}
 --- !u!65 &1580834898560416560
 BoxCollider:
   m_ObjectHideFlags: 0
