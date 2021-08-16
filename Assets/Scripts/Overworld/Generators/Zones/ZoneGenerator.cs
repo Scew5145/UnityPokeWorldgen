@@ -3,25 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public interface ZoneCreator
-{
-  IReadOnlyList<int> SampleHeightMap(int xcoord, int ycoord);
-  IReadOnlyList<Tile> GetPathTiles();
-  GameObject GenerateScene();
-}
-
 public struct Tile
 {
-  Vector3Int transform { get; set; }
-  bool isTraversable { get; set; }
-  Tile(Vector3Int inTransform, bool inIsTraversable)
+  public Vector3Int position;
+  public bool isTraversable;
+  public Tile(Vector3Int inPosition, bool inIsTraversable)
   {
-    transform = inTransform;
+    position = inPosition;
     isTraversable = inIsTraversable;
   }
 }
 
-public class ZoneGenerator : ScriptableObject, ZoneCreator
+public class ZoneGenerator : ScriptableObject
 {
   // Zones:
   /*
@@ -35,7 +28,6 @@ public class ZoneGenerator : ScriptableObject, ZoneCreator
   protected readonly Vector2Int overworldCoordinates;
   protected readonly int seed; // to be used with all random calls. Base constructor sets this up, make sure to call it in child classes
   protected string layer; // Used by the zone manager for level streaming. base overworld is just "overworld"
-  public static Vector3Int size = new Vector3Int(24, 24, 10);
 
   public ZoneGenerator(int inSeed, Vector2Int inOverworldCoordinates, string inLayer = "overworld")
   {
@@ -45,17 +37,17 @@ public class ZoneGenerator : ScriptableObject, ZoneCreator
     Random.InitState(seed);
   }
 
-  IReadOnlyList<int> ZoneCreator.SampleHeightMap(int xcoord, int ycoord)
+  public virtual IReadOnlyList<int> SampleHeightMap(int xcoord, int ycoord)
   {
     return new List<int> { 0 };
   }
 
-  IReadOnlyList<Tile> ZoneCreator.GetPathTiles()
+  public virtual IReadOnlyList<Tile> GetPathTiles()
   {
     return new List<Tile>();
   }
 
-  GameObject ZoneCreator.GenerateScene()
+  public virtual GameObject GenerateScene()
   {
     return new GameObject("DEFAULT_GEN");
   }
@@ -63,5 +55,9 @@ public class ZoneGenerator : ScriptableObject, ZoneCreator
   public string GetSceneName()
   {
     return layer + "_" + overworldCoordinates.x + "_" + overworldCoordinates.y;
+  }
+  public virtual Vector3Int GetSize()
+  {
+    return new Vector3Int(24, 10, 24);
   }
 }
