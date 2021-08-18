@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1783c7654408bdf4786173f873339b25, type: 3}
   m_Name: ZoneGenTable
   m_EditorClassIdentifier: 
+  InsertionKeyset:
+  - test
+  InsertionValueset:
+  - {fileID: 11400000, guid: 06ca161d897b803458af417a2b8eac24, type: 2}

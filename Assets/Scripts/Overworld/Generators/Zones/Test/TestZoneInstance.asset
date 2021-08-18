@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5ae1b9663ac2f2458036fa6e3adc03b, type: 3}
   m_Name: TestZoneInstance
   m_EditorClassIdentifier: 
-  tileTypes: []
+  tileTypes:
+  - {fileID: 8833663346008624945, guid: e78df1ca3e6ae65459ed7d2383376a90, type: 3}
