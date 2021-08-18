@@ -16,6 +16,7 @@ public class TestZoneGenerator : ZoneGenerator
     newTestZone.InitZone(inOverworldCoordinates, inLayer);
     newTestZone.SetSceneRoot(CreateSceneRoot());
     newTestZone.Root.transform.position = Vector3.zero;
+    
     Debug.Log(newTestZone);
     for (int i = 0; i < newTestZone.GetSize().x; i++)
     {

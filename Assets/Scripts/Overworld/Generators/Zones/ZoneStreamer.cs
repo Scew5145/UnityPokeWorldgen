@@ -31,9 +31,9 @@ public sealed class ZoneStreamer : MonoBehaviour
    * it also means I have to write functionality for saving out the registeredZones info, since that's the primary zone list
    */
 
-  private Dictionary<string, Zone> loadedZones;
+  private Dictionary<string, Zone> loadedZones; // #TODO: RuntimeTable of some sort, probably 
 
-  private Dictionary<string, ZoneStreamingInfo> registeredZones;
+  private Dictionary<string, ZoneStreamingInfo> registeredZones; // #TODO: RuntimeTable of some sort, probably
 
   public bool ZoneExists(string zoneName)
   {
