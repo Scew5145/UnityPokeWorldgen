@@ -21,7 +21,7 @@ struct ZoneStreamingInfo
 // When a zone is entered or exited. 
 // The ZoneFactory class is responsible for registering any created scenes with this streamer, and for interfacing with ZoneGenerators.
 // The ZoneGenerator class is responsible for populating each scene registered here.
-public sealed class ZoneStreamer : ScriptableObject
+public sealed class ZoneStreamer : MonoBehaviour
 {
   /* ZoneStreamer #TODO: Connect this with the save manager. 
    * Two main things have to be done for the ZoneStreamer to be considered fully functional:
@@ -30,25 +30,6 @@ public sealed class ZoneStreamer : ScriptableObject
    * That means I need to write saving and loading functions for zones.
    * it also means I have to write functionality for saving out the registeredZones info, since that's the primary zone list
    */
-  private static ZoneStreamer instance = null;
-  private static readonly object padlock = new object();
-  ZoneStreamer()
-  {
-  }
-  public static ZoneStreamer Streamer
-  {
-    get
-    {
-      lock (padlock)
-      {
-        if (instance == null)
-        {
-          instance = new ZoneStreamer();
-        }
-        return instance;
-      }
-    }
-  }
 
   private Dictionary<string, Zone> loadedZones;
 

@@ -9,12 +9,26 @@ using System;
 
 public struct Tile
 {
-  public Vector3Int position;
+  // Tiles are 'static' in that they won't change based on player interaction.
+  // Because of this, they don't need to implement any saving/loading interfaces outside their data.
+  [DataMember]
+  public Vector3 position;
+  [DataMember]
+  public Vector3 rotation;
+  [DataMember]
+  public Vector3 scale;
+  [DataMember]
   public bool isTraversable;
-  public Tile(Vector3Int inPosition, bool inIsTraversable)
+  [DataMember]
+  public int tileType;
+  public Tile(Vector3 inPosition = new Vector3(), Vector3 inRotation = new Vector3(), Vector3 inScale = new Vector3(), 
+    int inTileType = 0,bool inIsTraversable = false)
   {
     position = inPosition;
+    rotation = inRotation;
+    scale = inScale;
     isTraversable = inIsTraversable;
+    tileType = inTileType;
   }
 }
 
@@ -40,19 +54,23 @@ public class Zone : ScriptableObject
    * Zones are the PKWorldGen equivalent of "chunks" in minecraft.
    * They represent a sub-region of a route or other macro-generator construct.
    */
+
+  // should be set by the factory at runtime, as it is a monobehavior that we can plug prefabs directly into.
+
   [DataMember]
-  protected readonly Vector2Int _overworldCoordinates;
+  protected Vector2Int _overworldCoordinates;
   public Vector2Int OverworldCoordinates => _overworldCoordinates;
 
   [DataMember]
   protected string layer; // Used by the zone manager for level streaming. base overworld is just "overworld"
 
-  [DataMember]
-  private GameObject root;
+  private GameObject _root;
+  public GameObject Root => _root;
 
+  [DataMember]
   List<ZoneLink> adjacentZones;
 
-  public Zone(Vector2Int inOverworldCoordinates, string inLayer)
+  internal virtual void InitZone(Vector2Int inOverworldCoordinates, string inLayer)
   {
     _overworldCoordinates = inOverworldCoordinates;
     layer = inLayer;
@@ -78,14 +96,9 @@ public class Zone : ScriptableObject
     return new List<Tile>();
   }
 
-  public virtual GameObject GetSceneRoot()
-  {
-    return root;
-  }
-
   public void SetSceneRoot(GameObject newRoot)
   {
-    root = newRoot;
+    _root = newRoot;
   }
 
   public List<string> GetAdjacentZoneNames()
