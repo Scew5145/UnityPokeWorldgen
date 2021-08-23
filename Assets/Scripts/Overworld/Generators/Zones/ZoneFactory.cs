@@ -48,9 +48,13 @@ public class ZoneFactory : MonoBehaviour
       _running = false;
       return;
     }
-    Zone newZone = GenerateZone(generateQueue.Dequeue());
+    KeyValuePair<Vector2Int, string> generationInfo = generateQueue.Dequeue();
+    Zone newZone = GenerateZone(generationInfo);
+    generators[generationInfo.Value].SaveZone(newZone.GetSceneName() + ".zone", newZone);
+    Zone newerZone = generators[generationInfo.Value].LoadZone(newZone.GetSceneName() + ".zone");
+    generators[generationInfo.Value].BuildZone(newerZone);
     // TODO TESTING remove: this zone needs to be passed to the ZoneStreamer instead for management, and then saved and unloaded
-    SceneManager.MoveGameObjectToScene(newZone.Root, SceneManager.GetActiveScene());
+    //SceneManager.MoveGameObjectToScene(newZone.Root, SceneManager.GetActiveScene());
   }
 
   void QueueGenerateZone(string generatorType, Vector2Int inOverworldCoordinates)

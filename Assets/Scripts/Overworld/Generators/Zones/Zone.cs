@@ -50,19 +50,20 @@ public struct ZoneLink
 [DataContract]
 public class Zone : ScriptableObject
 {
-  /*
-   * Zones are the PKWorldGen equivalent of "chunks" in minecraft.
+  /**<summary>
+   * <c>Zones</c> are the PKWorldGen equivalent of "chunks" in minecraft.
    * They represent a sub-region of a route or other macro-generator construct.
+   * Zones themselves represent the data half of worldgen, with the <c>ZoneGenerator</c> representing the generation half.
+   * Anything important for saving/loading zones should use DataContract and similar directives to denote anything that needs to be saved on load.
+   * </summary>
    */
-
-  // should be set by the factory at runtime, as it is a monobehavior that we can plug prefabs directly into.
 
   [DataMember]
   protected Vector2Int _overworldCoordinates;
   public Vector2Int OverworldCoordinates => _overworldCoordinates;
 
   [DataMember]
-  protected string layer; // Used by the zone manager for level streaming. base overworld is just "overworld"
+  public string layer; // Used by the zone manager for level streaming. base overworld is just "overworld"
 
   private GameObject _root;
   public GameObject Root => _root;
