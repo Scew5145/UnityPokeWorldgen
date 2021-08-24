@@ -1,12 +1,9 @@
-using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.Serialization;
-using System.Runtime;
-using System.Xml;
-using System;
 
+[DataContract(Name = "Tile", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
 public struct Tile
 {
   // Tiles are 'static' in that they won't change based on player interaction.
@@ -32,6 +29,7 @@ public struct Tile
   }
 }
 
+[DataContract(Name = "ZoneLink", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
 public struct ZoneLink
 {
   [DataMember]
@@ -47,8 +45,8 @@ public struct ZoneLink
   }
 }
 
-[DataContract]
-public class Zone : ScriptableObject
+[DataContract(Name = "Zone", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
+public class Zone
 {
   /**<summary>
    * <c>Zones</c> are the PKWorldGen equivalent of "chunks" in minecraft.

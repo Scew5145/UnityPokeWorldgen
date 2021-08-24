@@ -4,6 +4,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System;
+using System.Text;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("Zone")]
@@ -50,6 +51,11 @@ public class ZoneGenerator : ScriptableObject
     return tileTypes[tileType];
   }
 
+  public virtual Type GetZoneType()
+  {
+    return typeof(Zone);
+  }
+
   /** <summary>
    * <c> GenerateZone </c> is a call once, save externally function. 
    * It's effectively static, but isn't explicitly, so that we can save ZoneGenerator variants in the unity editor, each with separate sets of generation params.
@@ -57,7 +63,7 @@ public class ZoneGenerator : ScriptableObject
    */
   public virtual Zone GenerateZone(Vector2Int inOverworldCoordinates, string inLayer = "overworld")
   {    
-    Zone newZone = CreateInstance<Zone>();
+    Zone newZone = new Zone();
     newZone.InitZone(inOverworldCoordinates, inLayer);
     return newZone;
   }
@@ -70,18 +76,19 @@ public class ZoneGenerator : ScriptableObject
   public virtual void BuildZone(in Zone zone)
   {
     GameObject newRoot = CreateSceneRoot();
+    Vector3 zoneSize = zone.GetSize();
     zone.SetSceneRoot(newRoot);
+    zone.Root.transform.position = new Vector3(zone.OverworldCoordinates.x * zoneSize.x, 0, zone.OverworldCoordinates.y * zoneSize.z);
     return;
   }
 
   public virtual Zone LoadZone(string fileName)
   {
-    Type type = GetType(); // Using GetType even in a base class function will still return the type of the derived class, because c# is cool
+    Type type = GetZoneType(); // Using GetType even in a base class function will still return the type of the derived class, because c# is cool
     string path = "F:/PokemonWorldgen/WorldgenMain/Assets/SaveData/" + fileName; // TODO: path as config scriptableobject
-    FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
-    XmlDictionaryReader reader =
-        XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
-
+    FileStream fs = new FileStream(path, FileMode.Open);
+    XmlTextReader reader = new XmlTextReader(fs);
+    reader.Read();
     DataContractSerializer ser =
         new DataContractSerializer(type);
 
@@ -96,7 +103,8 @@ public class ZoneGenerator : ScriptableObject
     // to read and write the data.
     string path = "F:/PokemonWorldgen/WorldgenMain/Assets/SaveData/" + fileName; // TODO: path as config scriptableobject
     FileStream fs = new FileStream(path, FileMode.Create);
-    XmlDictionaryWriter writer = XmlDictionaryWriter.CreateTextWriter(fs);
+    XmlTextWriter writer = new XmlTextWriter(fs, Encoding.Unicode);
+    writer.Formatting = Formatting.Indented;
     DataContractSerializer ser =
         new DataContractSerializer(zone.GetType());
     ser.WriteObject(writer, zone);
@@ -107,7 +115,9 @@ public class ZoneGenerator : ScriptableObject
 
   public virtual GameObject CreateSceneRoot()
   {
-    return new GameObject(GetRootName());
+    GameObject newRoot = new GameObject(GetRootName());
+    newRoot.name = GetRootName();
+    return newRoot;
   }
 
   public virtual string GetRootName()

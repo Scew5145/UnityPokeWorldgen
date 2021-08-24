@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -10,22 +11,17 @@ public class TestZoneGenerator : ZoneGenerator
   // TestZoneGenerator makes flat, all-0-height plane zones. Because it's for testing.
   public TestZoneGenerator() : base()
   {
-
   }
   public override Zone GenerateZone(Vector2Int inOverworldCoordinates, string inLayer = "overworld")
   {
-    TestZone newTestZone = CreateInstance<TestZone>();
-    newTestZone.InitZone(inOverworldCoordinates, inLayer);
-    newTestZone.SetSceneRoot(CreateSceneRoot());
-    newTestZone.Root.transform.position = Vector3.zero;
-    
-    Debug.Log(newTestZone);
+    TestZone newTestZone = new TestZone();
+    newTestZone.InitZone(inOverworldCoordinates, inLayer);    
     for (int i = 0; i < newTestZone.GetSize().x; i++)
     {
       for (int j = 0; j < newTestZone.GetSize().z; j++)
       {
         Tile newTile = new Tile(new Vector3(i, 0, j));
-        newTile.position.y = Random.Range(0.0f, 1.0f);
+        newTile.position.y = UnityEngine.Random.Range(0.0f, 1.0f);
         newTestZone.tiles.Add(newTile);
       }
     }
@@ -41,13 +37,20 @@ public class TestZoneGenerator : ZoneGenerator
       return;
     }
     TestZone testZone = (TestZone)zone;
+    base.BuildZone(zone); // do our root setup
     GameObject tilePrefab = GetTilePrefab(0);
     for (int i = 0; i < testZone.tiles.Count; i++)
     {
       Tile tile = testZone.tiles[i];
-      GameObject tileObject = Instantiate(GetTilePrefab(0),
+      GameObject tileObject = Instantiate(tilePrefab,
         new Vector3(tile.position.x, tile.position.y, tile.position.z),
-        GetTilePrefab(0).transform.rotation, testZone.Root.transform);
+        tilePrefab.transform.rotation);
+      tileObject.transform.SetParent(testZone.Root.transform, false);
     }
+  }
+
+  public override Type GetZoneType()
+  {
+    return typeof(TestZone);
   }
 }
