@@ -64,7 +64,7 @@ public class OverworldMoveAnimate : MonoBehaviour
   }
 
   public Texture2D spriteSheet;
-  protected SpriteRenderer sRenderer;
+  public SpriteRenderer sRenderer;
   public bool isSymmetric = false;
   protected EOverworldMoveState moveState = EOverworldMoveState.Idle;
   protected EOverworldMoveState lastMoveState = EOverworldMoveState.Idle;
@@ -122,7 +122,6 @@ public class OverworldMoveAnimate : MonoBehaviour
   protected void Start()
   {
     walkSprites = Resources.LoadAll<Sprite>(spriteSheet.name);
-    sRenderer = GetComponent<SpriteRenderer>();
   }
 
   // Update is called once per frame

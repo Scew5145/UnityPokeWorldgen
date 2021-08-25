@@ -85,7 +85,7 @@ public class ZoneGenerator : ScriptableObject
   public virtual Zone LoadZone(string fileName)
   {
     Type type = GetZoneType(); // Using GetType even in a base class function will still return the type of the derived class, because c# is cool
-    string path = "F:/PokemonWorldgen/WorldgenMain/Assets/SaveData/" + fileName; // TODO: path as config scriptableobject
+    string path = Application.persistentDataPath + fileName; // TODO: path as config scriptableobject
     FileStream fs = new FileStream(path, FileMode.Open);
     XmlTextReader reader = new XmlTextReader(fs);
     reader.Read();
@@ -101,7 +101,12 @@ public class ZoneGenerator : ScriptableObject
   {
     // Create a new instance of a StreamWriter
     // to read and write the data.
-    string path = "F:/PokemonWorldgen/WorldgenMain/Assets/SaveData/" + fileName; // TODO: path as config scriptableobject
+    string path = Application.persistentDataPath + fileName; // TODO: path as config scriptableobject
+
+    // Creating the directory like this will do nothing if it already exists
+    string folder = Path.GetDirectoryName(path);
+    Directory.CreateDirectory(folder);
+
     FileStream fs = new FileStream(path, FileMode.Create);
     XmlTextWriter writer = new XmlTextWriter(fs, Encoding.Unicode);
     writer.Formatting = Formatting.Indented;

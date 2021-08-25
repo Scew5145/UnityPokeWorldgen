@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InsertionKeyset:
   - test
+  - statictest
   InsertionValueset:
   - {fileID: 11400000, guid: 06ca161d897b803458af417a2b8eac24, type: 2}
+  - {fileID: 11400000, guid: 33a1c9409fc35e54ca6b4b032c618a10, type: 2}

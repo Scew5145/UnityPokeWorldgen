@@ -116,6 +116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteSheet: {fileID: 2800000, guid: b0ea6c0db96b2c24fafc90e82f5faba5, type: 3}
+  sRenderer: {fileID: 7070608830478626}
   isSymmetric: 0
 --- !u!1 &8890589330334560204
 GameObject:

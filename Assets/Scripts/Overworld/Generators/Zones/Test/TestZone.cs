@@ -9,8 +9,4 @@ public class TestZone : Zone
   [DataMember]
   internal List<Tile> tiles = new List<Tile>();
 
-  internal override void InitZone(Vector2Int inOverworldCoordinates, string inLayer)
-  {
-    base.InitZone(inOverworldCoordinates, inLayer);
-  }
 }

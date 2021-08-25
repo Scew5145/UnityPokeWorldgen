@@ -33,10 +33,10 @@ public class ZoneFactory : MonoBehaviour
   void Start()
   {
     generators.Init();
-    QueueGenerateZone("test", new Vector2Int(0, 0));
-    QueueGenerateZone("test", new Vector2Int(0, 1));
-    QueueGenerateZone("test", new Vector2Int(1, 0));
-    QueueGenerateZone("test", new Vector2Int(1, 1));
+    QueueGenerateZone("statictest", new Vector2Int(0, 0));
+    QueueGenerateZone("statictest", new Vector2Int(0, 1));
+    QueueGenerateZone("statictest", new Vector2Int(1, 0));
+    QueueGenerateZone("statictest", new Vector2Int(1, 1));
   }
 
   // Update is called once per frame
@@ -54,8 +54,8 @@ public class ZoneFactory : MonoBehaviour
     // TODO TESTING remove: this zone needs to be passed to the ZoneStreamer instead for management, and then saved and unloaded
     KeyValuePair<Vector2Int, string> generationInfo = generateQueue.Dequeue();
     Zone newZone = GenerateZone(generationInfo);
-    generators[generationInfo.Value].SaveZone(newZone.GetSceneName() + ".zone", newZone);
-    Zone newerZone = generators[generationInfo.Value].LoadZone(newZone.GetSceneName() + ".zone");
+    generators[generationInfo.Value].SaveZone("/ZoneData/" + newZone.GetSceneName() + ".zone", newZone);
+    Zone newerZone = generators[generationInfo.Value].LoadZone("/ZoneData/" + newZone.GetSceneName() + ".zone");
     generators[generationInfo.Value].BuildZone(newerZone);
     //SceneManager.MoveGameObjectToScene(newZone.Root, SceneManager.GetActiveScene());
   }
