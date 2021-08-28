@@ -78,7 +78,11 @@ public class ZoneGenerator : ScriptableObject
     GameObject newRoot = CreateSceneRoot();
     Vector3 zoneSize = zone.GetSize();
     zone.SetSceneRoot(newRoot);
-    zone.Root.transform.position = new Vector3(zone.OverworldCoordinates.x * zoneSize.x, 0, zone.OverworldCoordinates.y * zoneSize.z);
+    // Anything generated should be in the zoneSize.x * zoneSize.y grid, done as if the zone was being placed at 0,0 as its overworld tile
+    zone.Root.transform.position = new Vector3(
+      zone.OverworldCoordinates.x * zoneSize.x, 
+      0, 
+      zone.OverworldCoordinates.y * zoneSize.z);
     return;
   }
 

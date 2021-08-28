@@ -53,6 +53,7 @@ public class ZoneFactory : MonoBehaviour
     }
     // TODO TESTING remove: this zone needs to be passed to the ZoneStreamer instead for management, and then saved and unloaded
     KeyValuePair<Vector2Int, string> generationInfo = generateQueue.Dequeue();
+    ((StaticZoneGenerator)generators["statictest"]).rotation = new Vector3(0, 90 * (4 - generateQueue.Count), 0);
     Zone newZone = GenerateZone(generationInfo);
     generators[generationInfo.Value].SaveZone("/ZoneData/" + newZone.GetSceneName() + ".zone", newZone);
     Zone newerZone = generators[generationInfo.Value].LoadZone("/ZoneData/" + newZone.GetSceneName() + ".zone");
