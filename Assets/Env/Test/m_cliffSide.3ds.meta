@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fd15ced703bd8c94b8e7ec94d773f51b
+guid: e80cf6db00167c14cb10f345ba87d7a5
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
@@ -11,21 +11,18 @@ ModelImporter:
     second: //RootNode
   - first:
       21: 2100000
-    second: cliff_texTex
-  - first:
-      21: 2100002
-    second: cliff_texTex.000
-  - first:
-      21: 2100004
     second: cliff_overla
   - first:
-      21: 2100006
-    second: cliff_overla.000
+      21: 2100002
+    second: cliff_texTex
   - first:
-      21: 2100008
+      21: 2100004
+    second: cliff_texTex.000
+  - first:
+      21: 2100006
     second: cliff_tex
   - first:
-      21: 2100010
+      21: 2100008
     second: collision
   - first:
       23: 2300000
@@ -35,23 +32,18 @@ ModelImporter:
     second: //RootNode
   - first:
       43: 4300000
-    second: cliffCornerO
+    second: cliffCornerS
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: cliff_overla
-    second: {fileID: 2100000, guid: c5b0a43b6702d8a4bb91174c847d0248, type: 2}
+    second: {fileID: 2100000, guid: 557fe397b5e2e6d47ac9bf2a0eeed3d3, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: cliff_tex
     second: {fileID: 2100000, guid: e2b73a03974719345be5cf16d3f24a7d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: collision
-    second: {fileID: 2100000, guid: c3f4066ea4d5c044a926c210e83bfb47, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

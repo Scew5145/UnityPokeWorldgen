@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3ab3c8a49366745459ef5e3694fb7e2f
+guid: 1f8344de5a9889c46b725075e3459665
 IHVImageFormatImporter:
   externalObjects: {}
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 0
