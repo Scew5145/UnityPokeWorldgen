@@ -11,35 +11,9 @@ using UnityEngine;
  *   Unity's animator, specifically for sprites, is not exposed to the user. For a single walking + idle animation set,
  *   It would require you to create 4 walking animations and 4 idle animations, with overrides for each direction, for EVERY CHARACTER.
  *   You can't make them dynamically on load, either, because that stuff isn't exposed to the user outside the editor module.
- *   This, obviously, is stupid. Instead, I've just animated Walking, Idling, etc. here, at 30fps.
+ *   This, obviously, is stupid. Instead, I've just animated Walking, Idling, etc. as scriptable objects.
+ *   OverworldMoveAnimate by handles the 'four directions' part of it. Actual Movement of the character is handled in a separate script, See PlayerMovement.cs
 */
-
-/*There's two main variants for spritesheets: Symmetric and Asymmetric.
- *  Asymmetric spritesheets are 12 total frames.
- *  Symmetric spritesheets are 7 total frames. to create the 5 "missing" frames, you mirror like so,
- *  where A is the asymmetric frame and S is the mirrored symmetric frame:
- *    A2 = mS1 | A5 = mS2 | A9 : mS6 | A10 : mS7 | A11 : mS8
-*/
-
-/*
- * Using this Class:
- * Whatever controls the animation should only make calls to SetMoveState. SpriteAnimation is public, 
- * so use it in other animator classes if you need non-moving animations. As far as I know, outside of the Player, 
- * there's very few objects that should have moving sprite animations extended beyond walk/idle.
- *  
- */
-
-public struct SpriteAnimation
-{
-  public readonly List<KeyValuePair<float, int>> Keyframes;
-  public readonly float length;
-  public SpriteAnimation(List<KeyValuePair<float, int>> k, float l)
-  {
-    Keyframes = new List<KeyValuePair<float,int>>(k); 
-    length = l;
-  }
-
-}
 
 
 public class OverworldMoveAnimate : MonoBehaviour
@@ -62,7 +36,7 @@ public class OverworldMoveAnimate : MonoBehaviour
     Left,
     Right
   }
-
+  public SpriteAnimation WalkBase;
   public Texture2D spriteSheet;
   public SpriteRenderer sRenderer;
   public bool isSymmetric = false;
@@ -95,6 +69,7 @@ public class OverworldMoveAnimate : MonoBehaviour
     }
   }
 
+  // I'd like to move this out of here and into a scriptable object or something similar, but for now this will do
   protected static Dictionary<int, KeyValuePair<int, bool>> SymmetricIndexMap = new Dictionary<int, KeyValuePair<int, bool>>
   {
     { 0, new KeyValuePair<int, bool>(0, false) },
@@ -110,14 +85,6 @@ public class OverworldMoveAnimate : MonoBehaviour
     { 10, new KeyValuePair<int, bool>(5, true) },
     { 11, new KeyValuePair<int, bool>(6, true) }
   };
-
-  protected static SpriteAnimation WalkBase = new SpriteAnimation(new List<KeyValuePair<float, int>>
-  {
-    new KeyValuePair<float, int>(0.0f, 0),
-    new KeyValuePair<float, int>((5.0f/30.0f), 1),
-    new KeyValuePair<float, int>((10.0f/30.0f), 0),
-    new KeyValuePair<float, int>((15.0f/30.0f), 2),
-  }, 20.0f / 30.0f);
 
   protected void Start()
   {
@@ -173,7 +140,7 @@ public class OverworldMoveAnimate : MonoBehaviour
 
   protected int GetSpriteIndex(SpriteAnimation spriteAnim, EFacingDirection directionToGet)
   {
-    if(spriteAnim.Keyframes.Count == 0)
+    if(spriteAnim.Times.Count == 0)
     {
       Debug.LogError("Sprite Animation 0 Keyframes! This is a bad time!");
       return -1;
@@ -182,15 +149,15 @@ public class OverworldMoveAnimate : MonoBehaviour
     {
       
       currentFrame += 1;
-      if(currentFrame >= spriteAnim.Keyframes.Count)
+      if(currentFrame >= spriteAnim.Times.Count)
       {
         nextTime = spriteAnim.length;
       }
       else
       {
-        nextTime = spriteAnim.Keyframes[currentFrame].Key;
+        nextTime = spriteAnim.Times[currentFrame];
       }
-      if (currentFrame > spriteAnim.Keyframes.Count)
+      if (currentFrame > spriteAnim.Times.Count)
       {
         currentFrame = 0;
         currentTime = 0.0f;
@@ -199,7 +166,7 @@ public class OverworldMoveAnimate : MonoBehaviour
       // print("advance" + spriteAnim.Keyframes[currentFrame].Value + " | " + currentTime);
     }
     currentTime += Time.deltaTime;
-    int displayedFrame = currentFrame % spriteAnim.Keyframes.Count;
-    return (spriteAnim.Keyframes[displayedFrame].Value) + 3 * (int)direction;
+    int displayedFrame = currentFrame % spriteAnim.Times.Count;
+    return (spriteAnim.SpriteFrames[displayedFrame]) + 3 * (int)direction;
   }
 }

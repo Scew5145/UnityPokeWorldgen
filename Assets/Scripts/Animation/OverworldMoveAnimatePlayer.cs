@@ -6,6 +6,7 @@ public class OverworldMoveAnimatePlayer : OverworldMoveAnimate
 {
   public Texture2D runSpriteSheet;
   protected Sprite[] runSprites;
+  public SpriteAnimation RunBase;
   protected new void Start()
   {
     base.Start();
@@ -13,13 +14,13 @@ public class OverworldMoveAnimatePlayer : OverworldMoveAnimate
     // We could switch between the walk sprites and the run sprites at any time, so we keep both in memory
   }
 
-  protected static SpriteAnimation RunBase = new SpriteAnimation(new List<KeyValuePair<float, int>>
+ /* protected static SpriteAnimation RunBase = new SpriteAnimation(new List<KeyValuePair<float, int>>
   {
     new KeyValuePair<float, int>(0.0f, 0),
     new KeyValuePair<float, int>((2.5f/30.0f), 1),
     new KeyValuePair<float, int>((5.0f/30.0f), 0),
     new KeyValuePair<float, int>((7.5f/30.0f), 2),
-  }, 10.0f / 30.0f);
+  }, 10.0f / 30.0f);*/
   protected override void DoAnimation() 
   {
     switch(moveState)
