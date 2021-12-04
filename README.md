@@ -2,7 +2,7 @@
 
 Why are you reading this right now?
 
-This repo is basically empty. Come back in a few months.
+This repo is still under construction. Come back in a few months.
 
 ...
 
