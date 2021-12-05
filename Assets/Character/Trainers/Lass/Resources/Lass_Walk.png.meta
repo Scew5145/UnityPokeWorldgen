@@ -45,6 +45,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -268,6 +269,14 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Lass_Walk_2: 1232550281237867954
+      Lass_Walk_6: -6631432562706527629
+      Lass_Walk_0: 8464405508602171586
+      Lass_Walk_1: -6658669176794063018
+      Lass_Walk_4: 6413784235149516327
+      Lass_Walk_3: -9133835516761556170
+      Lass_Walk_5: -3673170885483341521
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
