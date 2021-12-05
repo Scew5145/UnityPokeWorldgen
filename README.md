@@ -8,7 +8,7 @@ The majority of the work will be done in Unity, and there'll be some attempts to
 
 1. Clone the repository to your computer, through Github Desktop or otherwise.
 2. Download Unity Hub from [here](https://unity3d.com/get-unity/download)
-3. Install the current Unity version the project is using (2020.3.17f1) 
+3. Install the current Unity version the project is using (2021.2.5f1) 
 4. Add the _WorldgenMain_ folder to the projects list in Unity Hub
 5. Launch Unity
 6. You can try some of what is currently in the project by going to Scenes -> Sample Scene and running around.
