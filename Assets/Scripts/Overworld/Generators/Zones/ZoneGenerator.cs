@@ -27,6 +27,9 @@ public class ZoneGenerator : ScriptableObject
   public int seed; // ZoneGenerator #TODO for debug purposes - should be passed to the zone on generation and saved to gen files
   public string rootName;
 
+  [SerializeField]
+  public GameEvent zoneEnterEvent;
+
   public ZoneGenerator() : base()
   {
   }
@@ -65,6 +68,7 @@ public class ZoneGenerator : ScriptableObject
   {    
     Zone newZone = new Zone();
     newZone.InitZone(inOverworldCoordinates, inLayer);
+    newZone.ZoneType = "zone";
     return newZone;
   }
 
@@ -76,7 +80,14 @@ public class ZoneGenerator : ScriptableObject
   public virtual void BuildZone(in Zone zone)
   {
     GameObject newRoot = CreateSceneRoot();
+    BoxCollider zoneEdgeDetect = newRoot.AddComponent<BoxCollider>();
+    ZoneEnterExitTrigger zoneTrigger = newRoot.AddComponent<ZoneEnterExitTrigger>();
+    zoneTrigger.enterEvent = zoneEnterEvent;
+    newRoot.layer = 3;
     Vector3 zoneSize = zone.GetSize();
+    zoneEdgeDetect.center = new Vector3((zoneSize.x / 2.0f) - 0.5f, zoneSize.y / 2.0f, (zoneSize.z / 2.0f) - 0.5f);
+    zoneEdgeDetect.size = zoneSize;
+    zoneEdgeDetect.isTrigger = true;
     zone.SetSceneRoot(newRoot);
     // Anything generated should be in the zoneSize.x * zoneSize.y grid, done as if the zone was being placed at 0,0 as its overworld tile
     zone.Root.transform.position = new Vector3(

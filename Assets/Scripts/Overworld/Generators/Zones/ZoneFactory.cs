@@ -20,9 +20,11 @@ public class ZoneFactory : MonoBehaviour
    */
 
   public ZoneGeneratorReferenceTable generators;
-  
+
+  public ZoneStreamer zoneStreamer;
+
   protected string _layer = "overworld";
-  public string Layer => _layer;
+  public string Layer => _layer; // Layer isn't being properly used atm. Important for when we add enterable structures
 
   private bool _running;
   public bool Running => _running;
@@ -46,7 +48,7 @@ public class ZoneFactory : MonoBehaviour
     {
       return;
     }
-    if(generateQueue.Count == 0)
+    if (generateQueue.Count == 0)
     {
       _running = false;
       return;
@@ -55,16 +57,39 @@ public class ZoneFactory : MonoBehaviour
     KeyValuePair<Vector2Int, string> generationInfo = generateQueue.Dequeue();
     ((StaticZoneGenerator)generators["statictest"]).rotation = new Vector3(0, 90 * (4 - generateQueue.Count), 0);
     Zone newZone = GenerateZone(generationInfo);
-    generators[generationInfo.Value].SaveZone("/ZoneData/" + newZone.GetSceneName() + ".zone", newZone);
-    Zone newerZone = generators[generationInfo.Value].LoadZone("/ZoneData/" + newZone.GetSceneName() + ".zone");
-    generators[generationInfo.Value].BuildZone(newerZone);
-    //SceneManager.MoveGameObjectToScene(newZone.Root, SceneManager.GetActiveScene());
+    SaveZone(newZone);
+    zoneStreamer.RegisterZone(newZone);
+
+    //
+    //
   }
 
   void QueueGenerateZone(string generatorType, Vector2Int inOverworldCoordinates)
   {
     generateQueue.Enqueue(new KeyValuePair<Vector2Int, string>(inOverworldCoordinates, generatorType));
     _running = true;
+  }
+
+  public bool SaveZone(Zone zoneToSave)
+  {
+    if (!generators.ContainsKey(zoneToSave.ZoneType))
+    {
+      Debug.LogError("Failed to find zone of type " + zoneToSave.ZoneType + " for zone " + zoneToSave.GetSceneName());
+      return false;
+    }
+    generators[zoneToSave.ZoneType].SaveZone(GetZoneDataFolder() + zoneToSave.GetSceneName() + ".zone", zoneToSave);
+    return true;
+  }
+
+  protected Zone LoadZone(KeyValuePair<Vector2Int, string> generationInfo)
+  {
+    Zone outZone = generators[generationInfo.Value].LoadZone(GetZoneDataFolder() + Zone.GetSceneNameFromLocation(generationInfo.Value, generationInfo.Key) + ".zone");
+    return outZone;
+  }
+
+  public void BuildZone(Zone zoneToBuild)
+  {
+    generators[zoneToBuild.ZoneType].BuildZone(zoneToBuild);
   }
 
   protected Zone GenerateZone(KeyValuePair<Vector2Int, string> generationInfo)
@@ -74,5 +99,10 @@ public class ZoneFactory : MonoBehaviour
       return null;
     }
     return generators[generationInfo.Value].GenerateZone(generationInfo.Key, Layer);
+  }
+
+  public string GetZoneDataFolder()
+  {
+    return "/ZoneData/" + Layer + "/";
   }
 }

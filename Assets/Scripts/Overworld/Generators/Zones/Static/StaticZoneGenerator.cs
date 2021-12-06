@@ -29,6 +29,7 @@ public class StaticZoneGenerator : ZoneGenerator
       Debug.LogError("Got an empty prefab path for StaticZoneGenerator! This will crash if buildzone is called!");
     }
     newStaticZone.InitZone(inOverworldCoordinates, inLayer);
+    newStaticZone.ZoneType = "statictest";
     return newStaticZone;
   }
 

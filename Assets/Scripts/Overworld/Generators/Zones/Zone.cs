@@ -63,6 +63,9 @@ public class Zone
   [DataMember]
   public string layer; // Used by the zone manager for level streaming. base overworld is just "overworld"
 
+  [DataMember]
+  public string ZoneType; // used to find the required generator to spawn this type of zone. should be assigned by the corresponding Generator class
+
   private GameObject _root;
   public GameObject Root => _root;
 
@@ -77,7 +80,12 @@ public class Zone
 
   public string GetSceneName()
   {
-    return layer + "_" + _overworldCoordinates.x + "_" + _overworldCoordinates.y;
+    return GetSceneNameFromLocation(layer, _overworldCoordinates);
+  }
+
+  public static string GetSceneNameFromLocation(string inLayer, Vector2Int inCoordinates)
+  {
+    return inLayer + "_" + inCoordinates.x + "_" + inCoordinates.y;
   }
 
   public virtual Vector3Int GetSize()

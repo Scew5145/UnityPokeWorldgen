@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 3494101460800363605}
   - component: {fileID: 1580834898560416560}
   - component: {fileID: 7445837613723844615}
+  - component: {fileID: 7131696689523509093}
   m_Layer: 0
   m_Name: _Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 347632412648831863}
   - {fileID: 4799901676554811968}
@@ -60,24 +62,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementAnimationComponent: {fileID: 3609595312563756423}
---- !u!114 &3609595312563756423
-MonoBehaviour:
+--- !u!54 &7131696689523509093
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3765675894426197818}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31e14c221c3cd4b48890ed60c089bdaf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WalkBase: {fileID: 11400000, guid: b3474dfddfb04a541b12d507d44b5846, type: 2}
-  spriteSheet: {fileID: 2800000, guid: b0ea6c0db96b2c24fafc90e82f5faba5, type: 3}
-  sRenderer: {fileID: 3448158467876935905}
-  isSymmetric: 0
-  runSpriteSheet: {fileID: 2800000, guid: a11b3321fdce6d94a829dcf257204679, type: 3}
-  RunBase: {fileID: 11400000, guid: 9c0600e5a2148c94780433b5e0e42463, type: 2}
+  m_GameObject: {fileID: 130840853547718353}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &8183686006263139518
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,6 +107,7 @@ Transform:
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
   m_LocalPosition: {x: 0, y: 26.3, z: -21.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3494101460800363605}
   m_RootOrder: 0
@@ -184,6 +185,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
@@ -273,9 +275,9 @@ PrefabInstance:
     - {fileID: 7244157530726751980, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
     - {fileID: 9057963234045727329, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
---- !u!4 &4799901676554811968 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7881266713855597443, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
+--- !u!212 &3448158467876935905 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7070608830478626, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
   m_PrefabInstance: {fileID: 3441681904584155587}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &3765675894426197818 stripped
@@ -283,8 +285,26 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1981884223139004153, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
   m_PrefabInstance: {fileID: 3441681904584155587}
   m_PrefabAsset: {fileID: 0}
---- !u!212 &3448158467876935905 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 7070608830478626, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
+--- !u!114 &3609595312563756423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3765675894426197818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31e14c221c3cd4b48890ed60c089bdaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WalkBase: {fileID: 11400000, guid: b3474dfddfb04a541b12d507d44b5846, type: 2}
+  spriteSheet: {fileID: 2800000, guid: b0ea6c0db96b2c24fafc90e82f5faba5, type: 3}
+  sRenderer: {fileID: 3448158467876935905}
+  isSymmetric: 0
+  runSpriteSheet: {fileID: 2800000, guid: a11b3321fdce6d94a829dcf257204679, type: 3}
+  RunBase: {fileID: 11400000, guid: 9c0600e5a2148c94780433b5e0e42463, type: 2}
+--- !u!4 &4799901676554811968 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7881266713855597443, guid: a2cab297cedb2d345b98a0bb82c589eb, type: 3}
   m_PrefabInstance: {fileID: 3441681904584155587}
   m_PrefabAsset: {fileID: 0}

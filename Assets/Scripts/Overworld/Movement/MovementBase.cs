@@ -9,6 +9,7 @@ public class MovementBase : MonoBehaviour
 
   protected BoxCollider baseCollider;
   readonly static float collRayLength = 1.499f; // statically calc this to go fast 
+  protected LayerMask layerMask = 1;
 
   // Offset for all movement raycasts (from hitbox center). Both horizontal and vertical position. Starting a bit below the top of the 1x1 cube
   protected readonly static Vector3 raycastOffset = new Vector3(0.0f, 1.0f, 0.0f);
@@ -111,7 +112,7 @@ public class MovementBase : MonoBehaviour
     Vector3 raycastDirection = new Vector3(0.0f, -1.5f, 0.0f);
     Ray colliderRay = new Ray(raycastStart, raycastDirection);
     //Debug.DrawRay(raycastStart, raycastDirection, Color.red, 1.0f, true);
-    if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.5f))
+    if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.5f, layerMask))
     {
       gameObject.transform.position = new Vector3(gameObject.transform.position.x, hit.point.y, gameObject.transform.position.z);
     }
@@ -133,7 +134,7 @@ public class MovementBase : MonoBehaviour
     Vector3 offsetCenter = gameObject.transform.position + raycastOffset;
     Ray colliderRay = new Ray(offsetCenter, raycastDirection);
     // Debug.DrawRay(offsetCenter, raycastDirection.normalized * collRayLength, Color.green, 1.0f, true);
-    Physics.Raycast(colliderRay, out RaycastHit hit, collRayLength);
+    Physics.Raycast(colliderRay, out RaycastHit hit, collRayLength, layerMask);
     return hit;
   }
 }

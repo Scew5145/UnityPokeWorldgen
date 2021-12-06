@@ -8,7 +8,7 @@ struct ZoneStreamingInfo
 {
   List<string> adjacentZonesToLoad;
   Vector2Int zoneLocation;
-  ZoneStreamingInfo(Zone inputZone)
+  public ZoneStreamingInfo(Zone inputZone)
   {
     adjacentZonesToLoad = inputZone.GetAdjacentZoneNames();
     zoneLocation = inputZone.OverworldCoordinates;
@@ -31,9 +31,13 @@ public sealed class ZoneStreamer : MonoBehaviour
    * it also means I have to write functionality for saving out the registeredZones info, since that's the primary zone list
    */
 
-  private Dictionary<string, Zone> loadedZones; // #TODO: RuntimeTable of some sort, probably 
+  private Dictionary<string, Zone> loadedZones;
 
-  private Dictionary<string, ZoneStreamingInfo> registeredZones; // #TODO: RuntimeTable of some sort, probably
+  private Dictionary<string, ZoneStreamingInfo> registeredZones;
+
+  public void Start()
+  {
+  }
 
   public bool ZoneExists(string zoneName)
   {
@@ -48,7 +52,10 @@ public sealed class ZoneStreamer : MonoBehaviour
       Debug.LogError("Zone " + newZone.GetSceneName() + " was doubly registered!");
       return false;
     }
-    return true; //newZone->Save();
+
+    loadedZones.Add(zoneName, newZone);
+    registeredZones.Add(zoneName, new ZoneStreamingInfo(newZone));
+    return true;
   }
 
   public WeakReference<Zone> GetZoneReference(string zoneName)
@@ -59,5 +66,18 @@ public sealed class ZoneStreamer : MonoBehaviour
     }
     return null;
   }
+
+  // #TODO: zone loading / unloading
+  /*
+   * zone streamer has a string that represents the 'current zone' we're in. 
+   * adj. zones needs to be filled out properly
+   * concept: zones that're only visible but not traversable. should be linked like normal?
+   * then, loading states need to be set up
+   * States:
+   *      Built (exists in game)
+   *      Disabled (exists in game, all children disabled)
+   *      Loaded (Zone struct is loaded, but not built)
+   *      Unloaded (Exists solely as a zone link)
+   */
 }
 

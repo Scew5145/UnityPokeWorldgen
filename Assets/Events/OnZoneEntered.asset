@@ -9,10 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d80890a8867e3447b0b846bd1f66d00, type: 3}
-  m_Name: Static Test Zone
+  m_Script: {fileID: 11500000, guid: 67d379f848b073c4b9067f630db5c307, type: 3}
+  m_Name: OnZoneEntered
   m_EditorClassIdentifier: 
-  seed: 0
-  rootName: Static Test Zone
-  tileTypes: []
-  prefabPath: Static/StaticTestZone

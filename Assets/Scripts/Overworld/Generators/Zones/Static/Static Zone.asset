@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5ae1b9663ac2f2458036fa6e3adc03b, type: 3}
-  m_Name: TestZoneInstance
+  m_Script: {fileID: 11500000, guid: 1d80890a8867e3447b0b846bd1f66d00, type: 3}
+  m_Name: Static Zone
   m_EditorClassIdentifier: 
   seed: 0
-  rootName: TestZone
+  rootName: Static  Zone
   zoneEnterEvent: {fileID: 11400000, guid: 5b6ccf8c1e543e84982424fe4ac4540d, type: 2}
-  tileTypes:
-  - {fileID: 8833663346008624945, guid: e78df1ca3e6ae65459ed7d2383376a90, type: 3}
+  tileTypes: []
+  prefabPath: Static/StaticTestZone
+  rotation: {x: 0, y: 360, z: 0}

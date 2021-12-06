@@ -128,7 +128,7 @@ public class PlayerMovement : MovementBase
     Vector3 raycastDirection = new Vector3(0.0f, -1.5f, 0.0f);
     Ray colliderRay = new Ray(raycastStart, raycastDirection);
     //Debug.DrawRay(raycastStart, raycastDirection, Color.red, 1.0f, true);
-    if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.5f))
+    if (Physics.Raycast(colliderRay, out RaycastHit hit, 1.5f, layerMask))
     {
       gameObject.transform.position = new Vector3(gameObject.transform.position.x, hit.point.y, gameObject.transform.position.z);
     }
