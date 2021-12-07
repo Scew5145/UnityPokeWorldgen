@@ -69,6 +69,7 @@ public class ZoneGenerator : ScriptableObject
     Zone newZone = new Zone();
     newZone.InitZone(inOverworldCoordinates, inLayer);
     newZone.ZoneType = "zone";
+
     return newZone;
   }
 

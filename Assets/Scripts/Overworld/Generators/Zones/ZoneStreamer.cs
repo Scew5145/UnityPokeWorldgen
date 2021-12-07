@@ -31,12 +31,22 @@ public sealed class ZoneStreamer : MonoBehaviour
    * it also means I have to write functionality for saving out the registeredZones info, since that's the primary zone list
    */
 
-  private Dictionary<string, Zone> loadedZones;
+  private RuntimeTable<string, Zone> loadedZones;
 
-  private Dictionary<string, ZoneStreamingInfo> registeredZones;
+  private RuntimeTable<string, ZoneStreamingInfo> registeredZones;
+
+  public ZoneFactory zoneFactory;
+
+  private string _currentZone;
+
+  public string CurrentZone => _currentZone;
 
   public void Start()
   {
+    zoneFactory.QueueGenerateZone("statictest", new Vector2Int(0, 0));
+    zoneFactory.QueueGenerateZone("test", new Vector2Int(0, 1));
+    zoneFactory.QueueGenerateZone("statictest", new Vector2Int(1, 0));
+    zoneFactory.QueueGenerateZone("statictest", new Vector2Int(1, 1));
   }
 
   public bool ZoneExists(string zoneName)
@@ -79,5 +89,25 @@ public sealed class ZoneStreamer : MonoBehaviour
    *      Loaded (Zone struct is loaded, but not built)
    *      Unloaded (Exists solely as a zone link)
    */
+
+  // Simulate a teleport by loading a zone from scratch, optionally emptying the loaded set of zones
+  public void LoadZone(string layer, Vector2Int zoneCoordinates, bool clearLoaded = false)
+  {
+    if(clearLoaded)
+    {
+      loadedZones.Clear(); // TODO: Zone needs a destructor for cleaning up trainers and stuff. Maybe.
+    }
+    Zone loadedZone = null;
+    if(!zoneFactory.IsZoneGenerated(layer, zoneCoordinates))
+    {
+      // TODO: zones that haven't been generated yet should be generated here. RuntimeTable ref to a coordinate --> generator pair
+      // said table should be updated and edited by whatever the region generator is.
+      //loadedZone = zoneFactory.GenerateZone()
+    }
+    else
+    {
+      //loadedZone = zoneFactory.LoadZone(layer, zoneCoordinates);
+    }
+  }
 }
 

@@ -46,4 +46,9 @@ public abstract class RuntimeTable<TKey, TValue> : ScriptableObject, IRuntimeTab
       KeyPair[key] = value;
     }
   }
+
+  public void Clear()
+  {
+    KeyPair.Clear();
+  }
 }
