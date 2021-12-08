@@ -43,14 +43,16 @@ public sealed class ZoneStreamer : MonoBehaviour
 
   public void Start()
   {
-    zoneFactory.QueueGenerateZone("statictest", new Vector2Int(0, 0));
-    zoneFactory.QueueGenerateZone("test", new Vector2Int(0, 1));
-    zoneFactory.QueueGenerateZone("statictest", new Vector2Int(1, 0));
-    zoneFactory.QueueGenerateZone("statictest", new Vector2Int(1, 1));
+    //zoneFactory.QueueGenerateZone("statictest", new Vector2Int(0, 0));
+    //zoneFactory.QueueGenerateZone("test", new Vector2Int(0, 1));
+    //zoneFactory.QueueGenerateZone("statictest", new Vector2Int(1, 0));
+    //zoneFactory.QueueGenerateZone("statictest", new Vector2Int(1, 1));
   }
 
   public bool ZoneExists(string zoneName)
   {
+    if (!registeredZones)
+      return false;
     return registeredZones.ContainsKey(zoneName);
   }
 
@@ -62,15 +64,20 @@ public sealed class ZoneStreamer : MonoBehaviour
       Debug.LogError("Zone " + newZone.GetSceneName() + " was doubly registered!");
       return false;
     }
-
-    loadedZones.Add(zoneName, newZone);
-    registeredZones.Add(zoneName, new ZoneStreamingInfo(newZone));
+    if(loadedZones)
+    {
+      loadedZones.Add(zoneName, newZone);
+    }
+    if(registeredZones)
+    {
+      registeredZones.Add(zoneName, new ZoneStreamingInfo(newZone));
+    }
     return true;
   }
 
   public WeakReference<Zone> GetZoneReference(string zoneName)
   {
-    if(loadedZones.ContainsKey(zoneName))
+    if(loadedZones && loadedZones.ContainsKey(zoneName))
     {
       return new WeakReference<Zone>(loadedZones[zoneName]);
     }
@@ -90,14 +97,14 @@ public sealed class ZoneStreamer : MonoBehaviour
    *      Unloaded (Exists solely as a zone link)
    */
 
-  // Simulate a teleport by loading a zone from scratch, optionally emptying the loaded set of zones
+  // Simulate a teleport by loading a zone from scratch, optionally emptying the loaded set of zones TODO
   public void LoadZone(string layer, Vector2Int zoneCoordinates, bool clearLoaded = false)
   {
     if(clearLoaded)
     {
       loadedZones.Clear(); // TODO: Zone needs a destructor for cleaning up trainers and stuff. Maybe.
     }
-    Zone loadedZone = null;
+    //Zone loadedZone = null;
     if(!zoneFactory.IsZoneGenerated(layer, zoneCoordinates))
     {
       // TODO: zones that haven't been generated yet should be generated here. RuntimeTable ref to a coordinate --> generator pair
