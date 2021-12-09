@@ -10,7 +10,7 @@ public class TerrainPreviewer : MonoBehaviour
   void Start()
   {
     rend = GetComponent<Renderer>();
-    int seed = (int)(Random.Range(0.0f, 1.0f) * 256);
+    int seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
     Debug.Log("Seed: " + seed);
     tGen = new TerrainGenerator(seed);
     tGen.CalcTerrain();
