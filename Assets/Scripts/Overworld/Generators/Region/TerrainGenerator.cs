@@ -29,7 +29,7 @@ public class TerrainGenerator
   public Texture2D terrainTex;
   private Color[] pix; // This should be a greyscale texture to go fast, but... L A Z Y
 
-  public TerrainGenerator(int _seed, int _mapWidth = 256, int _mapHeight = 256, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
+  public TerrainGenerator(int _seed, int _mapWidth = 512, int _mapHeight = 512, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
   {
     seed = _seed;
     Random.InitState(seed);
@@ -49,12 +49,12 @@ public class TerrainGenerator
     float y = 0.0f;
     float steps = 5.0f;
     float waterLevel = 1.0f / steps;
-    //float sphereCenterX = 0.5f;//Random.Range(0.45f, 0.55f);
-    //float sphereCenterY = 0.5f;//Random.Range(0.45f, 0.55f);
+    // The vast majority of these parameters should be moved into a initialization struct param for TerrainGenerator.
+    // Preferably, a ScriptableObject so we can set-and-forget them and quickly switch between configs as needed
     int numberOfLines = 5;
-    float maxDistanceFromCenter = 0.1f;
+    float maxDistanceFromCenter = 0.15f;
     float sphereRadius = 0.5f;
-    float lineWeight = 0.5f;
+    float lineWeight = 0.6f;
     List<Vector2> points = new List<Vector2>();
     for(int i = 0; i < numberOfLines * 2; i++)
     {
@@ -73,7 +73,6 @@ public class TerrainGenerator
         float sample = (0.5f + ((float)simplexNoise.Evaluate(xCoord, yCoord) / 2.0f)); // between -1.0 and 1.0 after rescaling it
         //float sample = Mathf.PerlinNoise((float)xCoord, (float)yCoord);
 
-        // A clamped 0.0 to 1.0 function that will make the borders more ocean, and all ocean at the very edge
         Vector2 pixelPosition = new Vector2(x / terrainTex.width, y / terrainTex.height);
         float minDistance = float.MaxValue;
         for(int line = 0; line < numberOfLines; line++)
@@ -88,27 +87,28 @@ public class TerrainGenerator
         float distanceFromLines = (1.0f - (Mathf.Min(maxDistanceFromCenter, minDistance)
           / maxDistanceFromCenter));
 
-        float distanceToCenter = Mathf.Max(sphereWeight, distanceFromLines * lineWeight);
-        // Rescale the distance scalar to have flatter coasts and mountaintops, with a sharper midsection
-        //float rescaleHeight = Mathf.Clamp(1 - Mathf.Cos(Mathf.PI * distanceToCenter), 0.0f, 1.0f);
-        float rescaleHeight = distanceToCenter * distanceToCenter * (3.0f - 2.0f * distanceToCenter);
+        float noiseMask = Mathf.Max(sphereWeight, distanceFromLines * lineWeight);
+        // Rescale the distance scalar to have flatter coasts and mountaintops, with a sharper midsection, lookup "Bezier Curves"
+        float rescaleHeight = noiseMask * noiseMask * (3.0f - 2.0f * noiseMask);
         float modifiedSample = (sample) * rescaleHeight; 
         float unstepped = (modifiedSample);
         float stepped = ((Mathf.Ceil(steps * modifiedSample)) / steps);
-        //if ((int)x % 8 == 0 || ((int)y % 8 == 0))
+        // zone borders, for debug. TODO: move to terrain previewer
+        //if ((int)x % 16 == 0 || ((int)y % 16 == 0))
         //{
         //  pix[(int)y * terrainTex.width + (int)x] = new Color(1.0f, 1.0f, 1.0f);
         //}
-        if (stepped <= waterLevel) // 0.2, for now, is sealevel. need to add this to the parameters
+        if (stepped <= waterLevel)
         {
-          pix[(int)y * terrainTex.width + (int)x] = new Color(0, 0.1f, 0.35f);
+          pix[(int)y * terrainTex.width + (int)x] = new Color(0.0f, 0.0f, 0.0f);
         }
         else
         {
-          Color lerpedColor = Color.Lerp(new Color(0.1f, 0.5f, 0.15f), new Color(1.0f, 1.0f, 0.8f), stepped);
-          pix[(int)y * terrainTex.width + (int)x] = lerpedColor;
+          // TODO: color code to terrain previewer
+          //
+          pix[(int)y * terrainTex.width + (int)x] = new Color(stepped, stepped, stepped);
         }
-        //pix[(int)y * terrainTex.width + (int)x] = new Color(rescaleHeight, rescaleHeight, rescaleHeight);
+        //pix[(int)y * terrainTex.width + (int)x] = new Color(noiseMask, noiseMask, noiseMask);
         //Debug.Log(pix[(int)y * terrainTex.width + (int)x]);
         x++;
       }
