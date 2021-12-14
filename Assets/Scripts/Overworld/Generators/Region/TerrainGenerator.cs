@@ -28,11 +28,13 @@ public class TerrainGenerator
 
   public Texture2D terrainTex;
   private Color[] pix; // This should be a greyscale texture to go fast, but... L A Z Y
+  public readonly ZoneGeneratorData[,] zoneGeneratorData;
 
-  public TerrainGenerator(int _seed, int _mapWidth = 512, int _mapHeight = 512, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
+  public TerrainGenerator(int _seed, ZoneGeneratorData[,] _zoneGeneratorData, int _mapWidth = 512, int _mapHeight = 512, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
   {
     seed = _seed;
     Random.InitState(seed);
+    zoneGeneratorData = _zoneGeneratorData;
     mapWidth = _mapWidth;
     mapHeight = _mapHeight;
     scale = _scale;
@@ -43,10 +45,9 @@ public class TerrainGenerator
     pix = new Color[terrainTex.width * terrainTex.height];
   }
 
-  public void CalcTerrain()
+  public void Generate()
   {
     // For each pixel in the texture...
-    float y = 0.0f;
     float steps = 5.0f;
     float waterLevel = 1.0f / steps;
     // The vast majority of these parameters should be moved into a initialization struct param for TerrainGenerator.
@@ -60,8 +61,8 @@ public class TerrainGenerator
     {
       points.Add(new Vector2(Random.Range(0.15f, 0.85f), Random.Range(0.15f, 0.85f)));
     }
-   
 
+    float y = 0.0f;
     while (y < terrainTex.height)
     {
       float x = 0.0f;
@@ -93,11 +94,7 @@ public class TerrainGenerator
         float modifiedSample = (sample) * rescaleHeight; 
         float unstepped = (modifiedSample);
         float stepped = ((Mathf.Ceil(steps * modifiedSample)) / steps);
-        // zone borders, for debug. TODO: move to terrain previewer
-        //if ((int)x % 16 == 0 || ((int)y % 16 == 0))
-        //{
-        //  pix[(int)y * terrainTex.width + (int)x] = new Color(1.0f, 1.0f, 1.0f);
-        //}
+        
         if (stepped <= waterLevel)
         {
           pix[(int)y * terrainTex.width + (int)x] = new Color(0.0f, 0.0f, 0.0f);
@@ -118,6 +115,27 @@ public class TerrainGenerator
     // Copy the pixel data to the texture and load it into the GPU.
     terrainTex.SetPixels(pix);
     terrainTex.Apply();
+
+    int zoneWidth = mapWidth / zoneGeneratorData.GetLength(0);
+    int zoneHeight = mapHeight / zoneGeneratorData.GetLength(0);
+
+    // Copy the height data into the zones
+    for (int i = 0; i < zoneGeneratorData.GetLength(0); i++)
+    {
+      for (int j = 0; j < zoneGeneratorData.GetLength(1); j++)
+      {
+        zoneGeneratorData[i, j].OverworldCoordinates = new Vector2Int(i, j);
+        zoneGeneratorData[i, j].heightMap = new float[zoneWidth, zoneHeight];
+        zoneGeneratorData[i, j].layer = "overworld";
+        for (int posX = 0; posX < zoneWidth; posX++)
+        {
+          for(int posY = 0; posY < zoneHeight; posY++)
+          {
+            zoneGeneratorData[i, j].heightMap[posX, posY] = terrainTex.GetPixel(i * zoneWidth + posX,j * zoneHeight + posY).r;
+          }
+        }
+      }
+    }
   }
 
   // Helper functions for ray-based masks

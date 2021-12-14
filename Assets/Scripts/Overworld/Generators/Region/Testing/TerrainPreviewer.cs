@@ -4,25 +4,24 @@ using UnityEngine;
 
 public class TerrainPreviewer : MonoBehaviour
 {
-  // Start is called before the first frame update
-  TerrainGenerator tGen;
+  // TODO: the code in ComputeCombinedTexture should be moved to a Generator manager class.
+  // All this should do is recieve the texture from said manager, and draw it on an object.
+  // For now this test code lives here
+  GeneratorManager generator;
   Texture2D outputTexture;
   Renderer rend;
   void Start()
   {
     rend = GetComponent<Renderer>();
-    int seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
-    Debug.Log("Seed: " + seed);
-    tGen = new TerrainGenerator(seed);
+    
+    
     ComputeCombinedTexture();
     rend.material.mainTexture = outputTexture;
   }
 
   void ComputeCombinedTexture()
   {
-    tGen.CalcTerrain();
-
-    outputTexture = new Texture2D(tGen.mapWidth, tGen.mapHeight);
+    outputTexture = new Texture2D(generator.tGen.mapWidth, generator.tGen.mapHeight);
     Color[] pix = new Color[outputTexture.width * outputTexture.height];
     int y = 0;
     Color waterColor = new Color(0.5f, 0.7f, 0.8f);
@@ -31,15 +30,20 @@ public class TerrainPreviewer : MonoBehaviour
       int x = 0;
       while (x < outputTexture.width)
       {
-        if(tGen.terrainTex.GetPixel(x, y) == Color.black)
+        // zone borders, for debug. TODO: move to terrain previewer
+        if (x % 16 == 0 || (y % 16 == 0))
         {
-          pix[(int)y * outputTexture.width + (int)x] = waterColor;
+          pix[y * outputTexture.width + x] = new Color(1.0f, 1.0f, 1.0f);
+        }
+        else if (generator.tGen.terrainTex.GetPixel(x, y) == Color.black)
+        {
+          pix[y * outputTexture.width + x] = waterColor;
         }
         else
         {
-          pix[(int)y * outputTexture.width + (int)x] = Color.Lerp(new Color(0.1f, 0.5f, 0.15f),
+          pix[y * outputTexture.width + x] = Color.Lerp(new Color(0.1f, 0.5f, 0.15f),
           new Color(1.0f, 1.0f, 0.8f),
-          tGen.terrainTex.GetPixel(x, y).r - 0.2f);
+          generator.tGen.terrainTex.GetPixel(x, y).r - 0.2f);
         }
         
         x++;
