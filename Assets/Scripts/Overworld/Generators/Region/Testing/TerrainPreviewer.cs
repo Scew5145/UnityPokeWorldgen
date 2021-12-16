@@ -7,7 +7,7 @@ public class TerrainPreviewer : MonoBehaviour
   // TODO: the code in ComputeCombinedTexture should be moved to a Generator manager class.
   // All this should do is recieve the texture from said manager, and draw it on an object.
   // For now this test code lives here
-  GeneratorManager generator;
+  public GeneratorManager generator;
   Texture2D outputTexture;
   Renderer rend;
   void Start()
@@ -15,11 +15,10 @@ public class TerrainPreviewer : MonoBehaviour
     rend = GetComponent<Renderer>();
     
     
-    ComputeCombinedTexture();
-    rend.material.mainTexture = outputTexture;
+    //ComputeCombinedTexture();
   }
 
-  void ComputeCombinedTexture()
+  public void ComputeCombinedTexture()
   {
     outputTexture = new Texture2D(generator.tGen.mapWidth, generator.tGen.mapHeight);
     Color[] pix = new Color[outputTexture.width * outputTexture.height];
@@ -52,6 +51,6 @@ public class TerrainPreviewer : MonoBehaviour
     }
     outputTexture.SetPixels(pix);
     outputTexture.Apply();
-
+    rend.material.mainTexture = outputTexture;
   }
 }

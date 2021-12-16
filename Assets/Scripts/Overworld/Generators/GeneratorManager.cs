@@ -11,7 +11,7 @@ public class GeneratorManager : MonoBehaviour
 
   // represents the number of total zones on the overworld map
   public Vector2Int regionDimensions = new Vector2Int(32, 32);
-  public int seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
+  public int seed;
 
   public ZoneGeneratorData[,] zoneData;
 
@@ -28,10 +28,11 @@ public class GeneratorManager : MonoBehaviour
     Finished
   }
 
-  GenerationStep currentStep;
+  GenerationStep currentStep = GenerationStep.Started;
 
   void Start()
   {
+    seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
     Debug.Log("Seed: " + seed);
   }
 
@@ -58,6 +59,7 @@ public class GeneratorManager : MonoBehaviour
         break;
       case GenerationStep.Finished:
         GenerationFinishedEvent.Raise(this);
+        currentStep = GenerationStep.Idle;
         break;
     }
   }
@@ -76,5 +78,6 @@ public struct ZoneGeneratorData
 
   public string zoneType;
   public string layer;
+  public List<string> tags; // for zonewide metadata, E.G. "land" for zones that are primarily land
 
 }

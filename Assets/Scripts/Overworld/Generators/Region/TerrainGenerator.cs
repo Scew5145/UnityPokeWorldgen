@@ -117,8 +117,8 @@ public class TerrainGenerator
     terrainTex.Apply();
 
     int zoneWidth = mapWidth / zoneGeneratorData.GetLength(0);
-    int zoneHeight = mapHeight / zoneGeneratorData.GetLength(0);
-
+    int zoneHeight = mapHeight / zoneGeneratorData.GetLength(1);
+    int tilesInZone = zoneWidth * zoneHeight;
     // Copy the height data into the zones
     for (int i = 0; i < zoneGeneratorData.GetLength(0); i++)
     {
@@ -127,12 +127,29 @@ public class TerrainGenerator
         zoneGeneratorData[i, j].OverworldCoordinates = new Vector2Int(i, j);
         zoneGeneratorData[i, j].heightMap = new float[zoneWidth, zoneHeight];
         zoneGeneratorData[i, j].layer = "overworld";
+        int tilesOfLandInZone = 0;
         for (int posX = 0; posX < zoneWidth; posX++)
         {
           for(int posY = 0; posY < zoneHeight; posY++)
           {
             zoneGeneratorData[i, j].heightMap[posX, posY] = terrainTex.GetPixel(i * zoneWidth + posX,j * zoneHeight + posY).r;
+            if(zoneGeneratorData[i, j].heightMap[posX, posY] != 0.0f)
+            {
+              tilesOfLandInZone += 1;
+            }
           }
+        }
+        if(zoneGeneratorData[i, j].tags == null)
+        {
+          zoneGeneratorData[i, j].tags = new List<string>();
+        }
+        if(tilesInZone/2 <= tilesOfLandInZone)
+        {
+          zoneGeneratorData[i, j].tags.Add("land");
+        }
+        else
+        {
+          zoneGeneratorData[i, j].tags.Add("water");
         }
       }
     }
