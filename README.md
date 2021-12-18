@@ -40,15 +40,16 @@ Submit a pull request or poke me on Discord (Ignus#6182) and I'll get you set up
 
 ## Major TODOS (to be claimed):
 
-* BW/BW2/HGSS Texture and asset rips: [See Here](https://www.pokecommunity.com/showthread.php?t=357039)
-* Finishing the zone streamer code (I'll do this myself probably)
+* BW/BW2/HGSS Texture and asset rips: [See Here](https://www.pokecommunity.com/showthread.php?t=357039) - HGSS rips done, not in repo. will add once processed
+* Finishing the zone streamer code
     * Caves and buildings: build a teleport system for going from an entrance to a smaller area
     * Load zones in and out of memory as you approach them
 * Building up zone/world/route generators:
     * A small prototype has been built in python for generating the route layout, [here](https://github.com/Scew5145/RandpokeWorldgen/blob/main/worldgen_main.py)
-    * I have some small amounts of notes on what I want to do for some of this, poke Scott if you want to work on these.
+    * Large scale region generation is partially written, see the generator test scene
     * There's going to be a LOT of generators, probably, so this can be claimed by an infinite number of people
 * Battle simulator code
+   * See [this](https://github.com/AJ2O/pbs-unity) - likely will be used as a base. 
 * AI code past movement and basic animation
 * Story work: 
     * What does the story of a randomly generated world look like?
@@ -58,7 +59,7 @@ Submit a pull request or poke me on Discord (Ignus#6182) and I'll get you set up
     * Building out the pause menu
         * Party, Pokedex, Badges, Save button, etc
     * PC menu
-    * Battles
+    * Battles (see battle sim code)
 
 * Saving
     * Some work has been done with saving the layout of a zone once it's generated, but there's a lot more that needs to be done
