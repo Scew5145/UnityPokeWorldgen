@@ -8,7 +8,7 @@ public class TerrainPreviewer : MonoBehaviour
   // All this should do is recieve the texture from said manager, and draw it on an object.
   // For now this test code lives here
   public GeneratorManager generator;
-  Texture2D outputTexture;
+  Texture2D gridPreviewTexture;
   Renderer rend;
   void Start()
   {
@@ -20,37 +20,32 @@ public class TerrainPreviewer : MonoBehaviour
 
   public void ComputeCombinedTexture()
   {
-    outputTexture = new Texture2D(generator.tGen.mapWidth, generator.tGen.mapHeight);
-    Color[] pix = new Color[outputTexture.width * outputTexture.height];
+    gridPreviewTexture = new Texture2D(generator.tGen.mapWidth, generator.tGen.mapHeight);
+    Color[] pix = new Color[gridPreviewTexture.width * gridPreviewTexture.height];
     int y = 0;
-    Color waterColor = new Color(0.5f, 0.7f, 0.8f);
-    while (y < outputTexture.height)
+    while (y < gridPreviewTexture.height)
     {
       int x = 0;
-      while (x < outputTexture.width)
+      while (x < gridPreviewTexture.width)
       {
         // zone borders, for debug. TODO: move to terrain previewer
-        if (x % 16 == 0 || (y % 16 == 0))
+        if (x % generator.regionData.zoneDimensions.x == 0 || (y % generator.regionData.zoneDimensions.y == 0))
         {
-          pix[y * outputTexture.width + x] = new Color(1.0f, 1.0f, 1.0f);
-        }
-        else if (generator.tGen.terrainTex.GetPixel(x, y) == Color.black)
-        {
-          pix[y * outputTexture.width + x] = waterColor;
+          pix[y * gridPreviewTexture.width + x] = Color.white;
         }
         else
         {
-          pix[y * outputTexture.width + x] = Color.Lerp(new Color(0.1f, 0.5f, 0.15f),
-          new Color(1.0f, 1.0f, 0.8f),
-          generator.tGen.terrainTex.GetPixel(x, y).r - 0.2f);
+          pix[y * gridPreviewTexture.width + x] = Color.black;
         }
         
         x++;
       }
       y++;
     }
-    outputTexture.SetPixels(pix);
-    outputTexture.Apply();
-    rend.material.mainTexture = outputTexture;
+    gridPreviewTexture.SetPixels(pix);
+    gridPreviewTexture.Apply();
+    rend.material.SetTexture("_Heightmap", generator.tGen.generatedTexture);
+    rend.material.SetTexture("_Grid", gridPreviewTexture);
+    rend.material.SetTexture("_Cities", generator.cGen.generatedTexture);
   }
 }

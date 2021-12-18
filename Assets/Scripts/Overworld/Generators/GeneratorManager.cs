@@ -4,16 +4,10 @@ using UnityEngine;
 
 public class GeneratorManager : MonoBehaviour
 {
-  public ZoneGeneratorData[,] GeneratedZoneData;
-
   public TerrainGenerator tGen;
   public CityGenerator cGen;
 
-  // represents the number of total zones on the overworld map
-  public Vector2Int regionDimensions = new Vector2Int(32, 32);
-  public int seed;
-
-  public ZoneGeneratorData[,] zoneData;
+  public RegionGeneratorData regionData = new RegionGeneratorData();
 
   public GameEvent GenerationFinishedEvent;
 
@@ -32,8 +26,10 @@ public class GeneratorManager : MonoBehaviour
 
   void Start()
   {
-    seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
-    Debug.Log("Seed: " + seed);
+    regionData.seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
+    regionData.regionDimensions = new Vector2Int(48, 48);
+    regionData.zoneDimensions = new Vector2Int(24, 24);
+    Debug.Log("Seed: " + regionData.seed);
   }
 
   void Update()
@@ -43,18 +39,17 @@ public class GeneratorManager : MonoBehaviour
       case GenerationStep.Idle:
         break;
       case GenerationStep.Started:
-        zoneData = new ZoneGeneratorData[regionDimensions.x, regionDimensions.y];
+        regionData.allZoneData = new ZoneGeneratorData[regionData.regionDimensions.x, regionData.regionDimensions.y];
         currentStep = GenerationStep.Terrain;
         break;
       case GenerationStep.Terrain:
-        tGen = new TerrainGenerator(seed, zoneData, regionDimensions.x * 24, regionDimensions.y * 24); 
-        // 24 is the number of tiles in a zone in DPPt
-        // By assuming that each pixel is one tile, we can do exact lookups to find a tile's base height which is helpful for zone generation
+        tGen = new TerrainGenerator(regionData.seed, regionData.allZoneData, regionData.regionDimensions.x * regionData.zoneDimensions.x, regionData.regionDimensions.y * regionData.zoneDimensions.y); 
         tGen.Generate();
         currentStep = GenerationStep.Cities;
         break;
       case GenerationStep.Cities:
-        cGen = new CityGenerator(seed, zoneData);
+        cGen = new CityGenerator(regionData);
+        cGen.Generate();
         currentStep = GenerationStep.Finished;
         break;
       case GenerationStep.Finished:
@@ -64,6 +59,23 @@ public class GeneratorManager : MonoBehaviour
     }
   }
 }
+
+public struct RegionGeneratorData
+{
+  /**<summary>
+   * <c>RegionGeneratorData</c> is a struct created and controlled by the GeneratorManager. Most region-scope generators must be passed this struct on construction,
+   * in order to perform their generation duties.
+   * </summary>
+   */
+  public int seed;
+  // represents the number of total zones on the overworld map
+  public Vector2Int regionDimensions;
+  // 24 is the number of tiles in a zone in DPPt
+  // By assuming that each pixel is one tile, we can do exact lookups to find a tile's base height which is helpful for zone generation
+  public Vector2Int zoneDimensions; 
+  public ZoneGeneratorData[,] allZoneData;
+}
+
 public struct ZoneGeneratorData
 {
   /**<summary>

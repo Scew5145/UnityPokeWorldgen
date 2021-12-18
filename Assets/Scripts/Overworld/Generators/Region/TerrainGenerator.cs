@@ -26,10 +26,10 @@ public class TerrainGenerator
 
   public readonly int seed;
 
-  public Texture2D terrainTex;
-  private Color[] pix; // This should be a greyscale texture to go fast, but... L A Z Y
+  public Texture2D generatedTexture;
   public readonly ZoneGeneratorData[,] zoneGeneratorData;
 
+  // TODO: TerrainGenerator constructor that accepts RegionGeneratorData and uses its values instead of internal ones to remove duplicate values
   public TerrainGenerator(int _seed, ZoneGeneratorData[,] _zoneGeneratorData, int _mapWidth = 512, int _mapHeight = 512, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
   {
     seed = _seed;
@@ -40,14 +40,14 @@ public class TerrainGenerator
     scale = _scale;
     xOrg = _xOrg + Random.Range(-10000.0f, 10000.0f);
     yOrg = _yOrg + Random.Range(-10000.0f, 10000.0f);
-    terrainTex = new Texture2D(mapWidth, mapHeight);
+    generatedTexture = new Texture2D(mapWidth, mapHeight);
     simplexNoise = new OpenSimplexNoise(seed);
-    pix = new Color[terrainTex.width * terrainTex.height];
   }
 
   public void Generate()
   {
-    // For each pixel in the texture...
+    // pix array is local so we can discard it after the terrain texture is generated, if needed
+    Color[] pix = new Color[generatedTexture.width * generatedTexture.height]; // This should be a greyscale texture to go fast, but... L A Z Y
     float steps = 5.0f;
     float waterLevel = 1.0f / steps;
     // The vast majority of these parameters should be moved into a initialization struct param for TerrainGenerator.
@@ -63,18 +63,18 @@ public class TerrainGenerator
     }
 
     float y = 0.0f;
-    while (y < terrainTex.height)
+    while (y < generatedTexture.height)
     {
       float x = 0.0f;
-      while (x < terrainTex.width)
+      while (x < generatedTexture.width)
       {
         
-        double xCoord = xOrg + x / terrainTex.width * scale;
-        double yCoord = yOrg + y / terrainTex.height * scale;
+        double xCoord = xOrg + x / generatedTexture.width * scale;
+        double yCoord = yOrg + y / generatedTexture.height * scale;
         float sample = (0.5f + ((float)simplexNoise.Evaluate(xCoord, yCoord) / 2.0f)); // between -1.0 and 1.0 after rescaling it
         //float sample = Mathf.PerlinNoise((float)xCoord, (float)yCoord);
 
-        Vector2 pixelPosition = new Vector2(x / terrainTex.width, y / terrainTex.height);
+        Vector2 pixelPosition = new Vector2(x / generatedTexture.width, y / generatedTexture.height);
         float minDistance = float.MaxValue;
         for(int line = 0; line < numberOfLines; line++)
         {
@@ -97,13 +97,13 @@ public class TerrainGenerator
         
         if (stepped <= waterLevel)
         {
-          pix[(int)y * terrainTex.width + (int)x] = new Color(0.0f, 0.0f, 0.0f);
+          pix[(int)y * generatedTexture.width + (int)x] = new Color(0.0f, 0.0f, 0.0f);
         }
         else
         {
           // TODO: color code to terrain previewer
           //
-          pix[(int)y * terrainTex.width + (int)x] = new Color(stepped, stepped, stepped);
+          pix[(int)y * generatedTexture.width + (int)x] = new Color(stepped, stepped, stepped);
         }
         //pix[(int)y * terrainTex.width + (int)x] = new Color(noiseMask, noiseMask, noiseMask);
         //Debug.Log(pix[(int)y * terrainTex.width + (int)x]);
@@ -113,8 +113,8 @@ public class TerrainGenerator
     }
 
     // Copy the pixel data to the texture and load it into the GPU.
-    terrainTex.SetPixels(pix);
-    terrainTex.Apply();
+    generatedTexture.SetPixels(pix);
+    generatedTexture.Apply();
 
     int zoneWidth = mapWidth / zoneGeneratorData.GetLength(0);
     int zoneHeight = mapHeight / zoneGeneratorData.GetLength(1);
@@ -132,7 +132,7 @@ public class TerrainGenerator
         {
           for(int posY = 0; posY < zoneHeight; posY++)
           {
-            zoneGeneratorData[i, j].heightMap[posX, posY] = terrainTex.GetPixel(i * zoneWidth + posX,j * zoneHeight + posY).r;
+            zoneGeneratorData[i, j].heightMap[posX, posY] = generatedTexture.GetPixel(i * zoneWidth + posX,j * zoneHeight + posY).r;
             if(zoneGeneratorData[i, j].heightMap[posX, posY] != 0.0f)
             {
               tilesOfLandInZone += 1;
