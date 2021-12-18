@@ -24,24 +24,21 @@ public class TerrainGenerator
   // over the width and height of the texture.
   public float scale;
 
-  public readonly int seed;
-
   public Texture2D generatedTexture;
-  public readonly ZoneGeneratorData[,] zoneGeneratorData;
+  public readonly RegionGeneratorData regionData;
 
   // TODO: TerrainGenerator constructor that accepts RegionGeneratorData and uses its values instead of internal ones to remove duplicate values
-  public TerrainGenerator(int _seed, ZoneGeneratorData[,] _zoneGeneratorData, int _mapWidth = 512, int _mapHeight = 512, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
+  public TerrainGenerator(RegionGeneratorData _regionData, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
   {
-    seed = _seed;
-    Random.InitState(seed);
-    zoneGeneratorData = _zoneGeneratorData;
-    mapWidth = _mapWidth;
-    mapHeight = _mapHeight;
+    regionData = _regionData;
+    Random.InitState(regionData.seed);
+    mapWidth = regionData.regionDimensions.x * regionData.zoneDimensions.x;
+    mapHeight = regionData.regionDimensions.y * regionData.zoneDimensions.y;
     scale = _scale;
     xOrg = _xOrg + Random.Range(-10000.0f, 10000.0f);
     yOrg = _yOrg + Random.Range(-10000.0f, 10000.0f);
     generatedTexture = new Texture2D(mapWidth, mapHeight);
-    simplexNoise = new OpenSimplexNoise(seed);
+    simplexNoise = new OpenSimplexNoise(regionData.seed);
   }
 
   public void Generate()
@@ -116,40 +113,40 @@ public class TerrainGenerator
     generatedTexture.SetPixels(pix);
     generatedTexture.Apply();
 
-    int zoneWidth = mapWidth / zoneGeneratorData.GetLength(0);
-    int zoneHeight = mapHeight / zoneGeneratorData.GetLength(1);
+    int zoneWidth = regionData.zoneDimensions.x;
+    int zoneHeight = regionData.zoneDimensions.y;
     int tilesInZone = zoneWidth * zoneHeight;
     // Copy the height data into the zones
-    for (int i = 0; i < zoneGeneratorData.GetLength(0); i++)
+    for (int i = 0; i < regionData.regionDimensions.x; i++)
     {
-      for (int j = 0; j < zoneGeneratorData.GetLength(1); j++)
+      for (int j = 0; j < regionData.regionDimensions.y; j++)
       {
-        zoneGeneratorData[i, j].OverworldCoordinates = new Vector2Int(i, j);
-        zoneGeneratorData[i, j].heightMap = new float[zoneWidth, zoneHeight];
-        zoneGeneratorData[i, j].layer = "overworld";
+        regionData.allZoneData[i + j*regionData.regionDimensions.x].OverworldCoordinates = new Vector2Int(i, j);
+        regionData.allZoneData[i + j*regionData.regionDimensions.x].heightMap = new float[zoneWidth * zoneHeight];
+        regionData.allZoneData[i + j*regionData.regionDimensions.x].layer = "overworld";
         int tilesOfLandInZone = 0;
         for (int posX = 0; posX < zoneWidth; posX++)
         {
           for(int posY = 0; posY < zoneHeight; posY++)
           {
-            zoneGeneratorData[i, j].heightMap[posX, posY] = generatedTexture.GetPixel(i * zoneWidth + posX,j * zoneHeight + posY).r;
-            if(zoneGeneratorData[i, j].heightMap[posX, posY] != 0.0f)
+            regionData.allZoneData[i + j*regionData.regionDimensions.x].heightMap[posX + posY * regionData.zoneDimensions.x] = generatedTexture.GetPixel(i * zoneWidth + posX,j * zoneHeight + posY).r;
+            if(regionData.allZoneData[i + j*regionData.regionDimensions.x].heightMap[posX + posY * regionData.zoneDimensions.x] != 0.0f)
             {
               tilesOfLandInZone += 1;
             }
           }
         }
-        if(zoneGeneratorData[i, j].tags == null)
+        if(regionData.allZoneData[i + j*regionData.regionDimensions.x].tags == null)
         {
-          zoneGeneratorData[i, j].tags = new List<string>();
+          regionData.allZoneData[i + j*regionData.regionDimensions.x].tags = new List<string>();
         }
         if(tilesInZone/2 <= tilesOfLandInZone)
         {
-          zoneGeneratorData[i, j].tags.Add("land");
+          regionData.allZoneData[i + j*regionData.regionDimensions.x].tags.Add("land");
         }
         else
         {
-          zoneGeneratorData[i, j].tags.Add("water");
+          regionData.allZoneData[i + j*regionData.regionDimensions.x].tags.Add("water");
         }
       }
     }

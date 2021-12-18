@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Runtime.Serialization;
+using System.IO;
+using System.Xml;
+using System.Text;
 
 public class GeneratorManager : MonoBehaviour
 {
@@ -39,11 +43,11 @@ public class GeneratorManager : MonoBehaviour
       case GenerationStep.Idle:
         break;
       case GenerationStep.Started:
-        regionData.allZoneData = new ZoneGeneratorData[regionData.regionDimensions.x, regionData.regionDimensions.y];
+        regionData.allZoneData = new ZoneGeneratorData[regionData.regionDimensions.x * regionData.regionDimensions.y];
         currentStep = GenerationStep.Terrain;
         break;
       case GenerationStep.Terrain:
-        tGen = new TerrainGenerator(regionData.seed, regionData.allZoneData, regionData.regionDimensions.x * regionData.zoneDimensions.x, regionData.regionDimensions.y * regionData.zoneDimensions.y); 
+        tGen = new TerrainGenerator(regionData); 
         tGen.Generate();
         currentStep = GenerationStep.Cities;
         break;
@@ -55,11 +59,13 @@ public class GeneratorManager : MonoBehaviour
       case GenerationStep.Finished:
         GenerationFinishedEvent.Raise(this);
         currentStep = GenerationStep.Idle;
+        RegionGeneratorData.SaveRegion("testRegionSave.region", regionData);
         break;
     }
   }
 }
 
+[DataContract(Name = "RegionGeneratorData", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
 public struct RegionGeneratorData
 {
   /**<summary>
@@ -67,15 +73,41 @@ public struct RegionGeneratorData
    * in order to perform their generation duties.
    * </summary>
    */
+  [DataMember]
   public int seed;
   // represents the number of total zones on the overworld map
+  [DataMember]
   public Vector2Int regionDimensions;
   // 24 is the number of tiles in a zone in DPPt
   // By assuming that each pixel is one tile, we can do exact lookups to find a tile's base height which is helpful for zone generation
-  public Vector2Int zoneDimensions; 
-  public ZoneGeneratorData[,] allZoneData;
+  [DataMember]
+  public Vector2Int zoneDimensions;
+
+  [DataMember]
+  public ZoneGeneratorData[] allZoneData; // TODO: Data contracts don't support 2d arrays, so this needs to be flattened
+
+
+  public static bool SaveRegion(string fileName, RegionGeneratorData data)
+  {
+    // Create a new instance of a StreamWriter
+    // to read and write the data.
+    string path = Application.persistentDataPath + fileName;
+    // Creating the directory like this will do nothing if it already exists
+    string folder = Path.GetDirectoryName(path);
+    Directory.CreateDirectory(folder);
+
+    FileStream fs = new FileStream(path, FileMode.Create);
+    XmlTextWriter writer = new XmlTextWriter(fs, Encoding.Unicode);
+    writer.Formatting = Formatting.Indented;
+    DataContractSerializer ser = new DataContractSerializer(data.GetType());
+    ser.WriteObject(writer, data);
+    writer.Close();
+    fs.Close();
+    return true;
+  }
 }
 
+[DataContract(Name = "ZoneGeneratorData", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
 public struct ZoneGeneratorData
 {
   /**<summary>
@@ -83,13 +115,17 @@ public struct ZoneGeneratorData
    * for the representation of a zone, without fully constructing it. <c>ZoneGenerators</c> should recieve it before GenerateZone() is called, if needed.
    * </summary>
    */
-
+  [DataMember]
   public Vector2Int OverworldCoordinates;
 
-  public float[,] heightMap;
+  [DataMember]
+  public float[] heightMap; // TODO: Data contracts don't support 2d arrays, so this needs to be flattened
 
+  [DataMember]
   public string zoneType;
+  [DataMember]
   public string layer;
+  [DataMember]
   public List<string> tags; // for zonewide metadata, E.G. "land" for zones that are primarily land
 
 }

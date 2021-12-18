@@ -23,15 +23,15 @@ public class CityGenerator
 
   public void GatherLandBasedZones()
   {
-    int regionWidth = regionData.allZoneData.GetLength(0);
-    int regionHeight = regionData.allZoneData.GetLength(1);
+    int regionWidth = regionData.regionDimensions.x;
+    int regionHeight = regionData.regionDimensions.y;
     for (int y = 0; y < regionHeight; y++)
     {
       for (int x = 0; x < regionWidth; x++)
       {
-        if (regionData.allZoneData[x, y].tags.Contains("land"))
+        if (regionData.allZoneData[x + (y * regionWidth)].tags.Contains("land"))
         {
-          validUntriedZones.Add(regionData.allZoneData[x, y]);
+          validUntriedZones.Add(regionData.allZoneData[x + (y * regionWidth)]);
         }
       }
     }
@@ -157,7 +157,8 @@ public class CityGenerator
         {
           for (int zoneX = 0; zoneX < regionData.zoneDimensions.x; zoneX++)
           {
-            newHeightMap[overworldX + zoneX, overworldY + zoneY] = regionData.allZoneData[overworldX, overworldY].heightMap[zoneX, zoneY];
+            newHeightMap[overworldX + zoneX, overworldY + zoneY] = regionData.allZoneData[overworldX + overworldY * regionData.regionDimensions.x]
+              .heightMap[zoneX + zoneY * regionData.zoneDimensions.x];
           }
         }
       }
