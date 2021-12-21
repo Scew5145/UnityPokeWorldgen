@@ -2,20 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CityGenerator
+public class CityGenerator : RegionGenerator
 {
-  public int numCities = 16;
-  public RegionGeneratorData regionData; // Note that only the reference value is readonly, but the array itself is good to be modified
-
-  public Texture2D generatedTexture;
+  public int numCities = 9;
   public List<ZoneGeneratorData> validUntriedZones;
   public List<ZoneGeneratorData> cities;
   private int maxCityPlacementAttempts = 10;
   public float minDistanceBetweenCities = 4;
-  public CityGenerator(RegionGeneratorData _regionData)
+  public CityGenerator(RegionGeneratorData _regionData) : base(_regionData)
   {
-    regionData = _regionData;
-    Random.InitState(regionData.seed);
     validUntriedZones = new List<ZoneGeneratorData>();
     cities = new List<ZoneGeneratorData>();
     generatedTexture = new Texture2D(regionData.regionDimensions.x * regionData.zoneDimensions.x, regionData.regionDimensions.y * regionData.zoneDimensions.y);

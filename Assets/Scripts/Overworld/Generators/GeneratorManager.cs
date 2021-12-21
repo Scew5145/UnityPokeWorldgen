@@ -10,6 +10,7 @@ public class GeneratorManager : MonoBehaviour
 {
   public TerrainGenerator tGen;
   public CityGenerator cGen;
+  public BiomeGenerator bGen;
 
   public RegionGeneratorData regionData = new RegionGeneratorData();
 
@@ -31,7 +32,7 @@ public class GeneratorManager : MonoBehaviour
   void Start()
   {
     regionData.seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
-    regionData.regionDimensions = new Vector2Int(48, 48);
+    regionData.regionDimensions = new Vector2Int(40, 40);
     regionData.zoneDimensions = new Vector2Int(24, 24);
     Debug.Log("Seed: " + regionData.seed);
   }

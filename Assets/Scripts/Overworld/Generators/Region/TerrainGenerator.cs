@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class TerrainGenerator
+public class TerrainGenerator : RegionGenerator // TODO: all region generators should inherit from the same class
 {
   // Base class for building out terrain to a 2D texture that can be sampled as a heightmap.
   // Most generation-dependent values are marked as readonly because they describe the map being built.
@@ -24,14 +24,10 @@ public class TerrainGenerator
   // over the width and height of the texture.
   public float scale;
 
-  public Texture2D generatedTexture;
-  public readonly RegionGeneratorData regionData;
 
   // TODO: TerrainGenerator constructor that accepts RegionGeneratorData and uses its values instead of internal ones to remove duplicate values
-  public TerrainGenerator(RegionGeneratorData _regionData, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f)
+  public TerrainGenerator(RegionGeneratorData _regionData, float _scale = 8.0f, float _xOrg = 0.0f, float _yOrg = 0.0f) : base(_regionData)
   {
-    regionData = _regionData;
-    Random.InitState(regionData.seed);
     mapWidth = regionData.regionDimensions.x * regionData.zoneDimensions.x;
     mapHeight = regionData.regionDimensions.y * regionData.zoneDimensions.y;
     scale = _scale;
