@@ -31,7 +31,7 @@ public class GeneratorManager : MonoBehaviour
 
   void Start()
   {
-    regionData.seed = (int)(Random.Range(0.0f, 1.0f) * 10000);
+    regionData.seed = (int)(Random.Range(0.0f, 1.0f) * 1000000);
     regionData.regionDimensions = new Vector2Int(40, 40);
     regionData.zoneDimensions = new Vector2Int(24, 24);
     Debug.Log("Seed: " + regionData.seed);
@@ -39,6 +39,11 @@ public class GeneratorManager : MonoBehaviour
 
   void Update()
   {
+    float frameStartTime = Time.realtimeSinceStartup;
+    if(currentStep != GenerationStep.Idle)
+    {
+      Debug.Log("Step:" + currentStep);
+    }
     switch (currentStep)
     {
       case GenerationStep.Idle:
@@ -55,6 +60,11 @@ public class GeneratorManager : MonoBehaviour
       case GenerationStep.Cities:
         cGen = new CityGenerator(regionData);
         cGen.Generate();
+        currentStep = GenerationStep.Biomes;
+        break;
+      case GenerationStep.Biomes:
+        bGen = new BiomeGenerator(regionData);
+        bGen.Generate();
         currentStep = GenerationStep.Finished;
         break;
       case GenerationStep.Finished:
@@ -62,6 +72,10 @@ public class GeneratorManager : MonoBehaviour
         currentStep = GenerationStep.Idle;
         RegionGeneratorData.SaveRegion("testRegionSave.region", regionData);
         break;
+    }
+    if (currentStep != GenerationStep.Idle)
+    {
+      Debug.Log("took " + (Time.realtimeSinceStartup - frameStartTime) + " to execute");
     }
   }
 }

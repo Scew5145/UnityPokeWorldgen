@@ -47,5 +47,6 @@ public class TerrainPreviewer : MonoBehaviour
     rend.material.SetTexture("_Heightmap", generator.tGen.generatedTexture);
     rend.material.SetTexture("_Grid", gridPreviewTexture);
     rend.material.SetTexture("_Cities", generator.cGen.generatedTexture);
+    rend.material.SetTexture("_Biomes", generator.bGen.generatedTexture);
   }
 }

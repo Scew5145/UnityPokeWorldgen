@@ -33,7 +33,6 @@ public class TerrainGenerator : RegionGenerator // TODO: all region generators s
     scale = _scale;
     xOrg = _xOrg + Random.Range(-10000.0f, 10000.0f);
     yOrg = _yOrg + Random.Range(-10000.0f, 10000.0f);
-    generatedTexture = new Texture2D(mapWidth, mapHeight);
     simplexNoise = new OpenSimplexNoise(regionData.seed);
   }
 
@@ -41,7 +40,7 @@ public class TerrainGenerator : RegionGenerator // TODO: all region generators s
   {
     // pix array is local so we can discard it after the terrain texture is generated, if needed
     Color[] pix = new Color[generatedTexture.width * generatedTexture.height]; // This should be a greyscale texture to go fast, but... L A Z Y
-    float steps = 5.0f;
+    float steps = 6.0f;
     float waterLevel = 1.0f / steps;
     // The vast majority of these parameters should be moved into a initialization struct param for TerrainGenerator.
     // Preferably, a ScriptableObject so we can set-and-forget them and quickly switch between configs as needed

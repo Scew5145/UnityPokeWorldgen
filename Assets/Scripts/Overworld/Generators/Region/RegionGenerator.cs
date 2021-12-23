@@ -12,5 +12,6 @@ public class RegionGenerator
   {
     regionData = _regionData;
     Random.InitState(regionData.seed);
+    generatedTexture = new Texture2D(regionData.regionDimensions.x * regionData.zoneDimensions.x, regionData.regionDimensions.y * regionData.zoneDimensions.y);
   }
 }
