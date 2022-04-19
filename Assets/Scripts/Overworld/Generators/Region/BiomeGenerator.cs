@@ -13,7 +13,7 @@ public class BiomeGenerator : RegionGenerator
   {
     // thoughts on this:
     // 'biome hotspots':
-    //    * Every biome is represented by a hotspot zone, where the 'center' of the biome is located. Zones get a biome based on closeness to a biome
+    //    * Every biome is represented by a hotspot zone, where the 'center' of the biome is located. Zones get a biome based on closeness to a hotspot
     //    * from there, each zone is given some biome data that's used during zone generation to decide which 'mons go where, what the terrain looks like, etc
     // Ways to determine biome hotspots:
     //    * full random (bad)
@@ -22,14 +22,50 @@ public class BiomeGenerator : RegionGenerator
     // Feature identification: Mountains
     float[,] newHeightMap = BiomeFeatureIdentifier.CreateHeightMap(regionData);
 
-    List<HashSet<Vector2Int>> maximumClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, float.MinValue,
+    // Every maximal location on the map, usually mountainous 
+    //List<HashSet<Vector2Int>> maximumClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, float.MinValue,
+    //  (a, b) => { return a == b; },
+    //  (a, b) => { return a > b; },
+    //  (a, b) => { return a == b; });
+    //Debug.Log("Maximums Cluster count:" + maximumClusters.Count);
+
+    // Every minimal location on the map, aka the water -- this is SLOW. May want to work on getting this faster
+    List<HashSet<Vector2Int>> waterClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, float.MaxValue,
       (a, b) => { return a == b; },
-      (a, b) => { return a > b; });
-    Debug.Log("Cluster count:" + maximumClusters.Count);
-    for (int clusterIndex = 0; clusterIndex < maximumClusters.Count; clusterIndex++)
+      (a, b) => { return a < b; },
+      (a, b) => { return a == b; });
+    //Debug.Log("Water Cluster count:" + waterClusters.Count);
+    //for (int clusterIndex = 0; clusterIndex < waterClusters.Count; clusterIndex++)
+    //{
+    //  Debug.Log("Cluster " + clusterIndex + " pixel count: " + waterClusters[clusterIndex].Count);
+    //}
+
+    // all spots on the map that are > 0 and the lowest value on the map, aka the shoreline
+    //List<HashSet<Vector2Int>> landClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, 0.0f,
+    //  (a, b) => { return a > b; },
+    //  (a, b) => { return false; },
+    //  (a, b) => { return a > 0.0f; });
+
+    waterClusters.Sort((x, y) => { return x.Count.CompareTo(y.Count); });
+
+    HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
+    for (int clusterIndex = 0; clusterIndex < waterClusters.Count; clusterIndex++)
     {
-      Debug.Log("Cluster " + clusterIndex + " pixel count: " + maximumClusters[clusterIndex].Count);
+      
+      Debug.Log("Cluster " + clusterIndex + " pixel count: " + waterClusters[clusterIndex].Count);
+      foreach(Vector2Int coordinate in waterClusters[clusterIndex])
+      {
+        Debug.Log(coordinate);
+        zonesTouched.Add(TilePositionToZone(coordinate));
+      }
+      Debug.Log(zonesTouched.Count);
+      foreach(Vector2Int overworldZone in zonesTouched)
+      {
+        Debug.Log("ZoneCoords:" + overworldZone);
+      }
     }
+
+    // Debug preview texture, just change which set of clusters are being looked at to debug them
     List<Color> colorList = new List<Color>();
     colorList.Add(Color.red);
     colorList.Add(Color.blue);
@@ -43,9 +79,9 @@ public class BiomeGenerator : RegionGenerator
       for (int x = 0; x < newHeightMap.GetLength(0); x++)
       {
         bool foundCluster = false;
-        for (int clusterIndex = 0; clusterIndex < maximumClusters.Count; clusterIndex++)
+        for (int clusterIndex = 0; clusterIndex < waterClusters.Count; clusterIndex++)
         {
-          if (maximumClusters[clusterIndex].Contains(new Vector2Int(x, y)))
+          if (waterClusters[clusterIndex].Contains(new Vector2Int(x, y)))
           {
             Color colorToUse = colorList[clusterIndex % colorList.Count];
             pix[x + (y * generatedTexture.width)] = colorToUse;
@@ -59,7 +95,6 @@ public class BiomeGenerator : RegionGenerator
         }
       }
     }
-
     generatedTexture.SetPixels(pix);
     generatedTexture.Apply();
   }
@@ -94,9 +129,11 @@ public class BiomeGenerator : RegionGenerator
     // "iterateComparison" is the check that's made if the first fails, to see if we need to change the comparison value for future pixel checks,
     // e.g. { return a > b }. The two functions combined would be equivalent to "find all pixels with the highest value on the map."
     // If you just need the first single comparison, just set iterateComparison to a function that just returns false.
-    public static List<HashSet<Vector2Int>> FindHeightClusters(float[,] heightMap, float comparisonValue,
-      Func<float, float, bool> comparison,
-      Func<float, float, bool> iterateComparison)
+    public static List<HashSet<Vector2Int>> FindHeightClusters(float[,] heightMap, 
+      float comparisonValue, // our starting value to determine which pixels should be considered using 'comparison'
+      Func<float, float, bool> comparison, // How to determine which set of pixels will be allowed in the comparison
+      Func<float, float, bool> iterateComparison, // iterates the previous comparison, e.g. if we find a set of pixels that are higher height then our previous
+      Func<float, float, bool> sameClusterComparison) // how to determine which adjacent pixels are considered to be part of the same cluster (usually a == b)
     {
       List<Vector2Int> passingPixels = new List<Vector2Int>();
       for (int y = 0; y < heightMap.GetLength(1); y++)
@@ -124,7 +161,7 @@ public class BiomeGenerator : RegionGenerator
         {
           continue;
         }
-        HashSet<Vector2Int> newCluster = FindSameHeightCluster(point, heightMap);
+        HashSet<Vector2Int> newCluster = FindCluster(point, heightMap, sameClusterComparison);
         foreach(Vector2Int clusteredPoint in newCluster)
         {
           visited.Add(clusteredPoint);
@@ -137,7 +174,7 @@ public class BiomeGenerator : RegionGenerator
     }
 
     // Gathers all adjacent points (good for finding lakes, mountain peaks, etc. once you id a pixel that's within a region)
-    public static HashSet<Vector2Int> FindSameHeightCluster(Vector2Int startPoint, float[,] heightMap)
+    public static HashSet<Vector2Int> FindCluster(Vector2Int startPoint, float[,] heightMap, Func<float, float, bool> comparison)
     {
       HashSet<Vector2Int> cluster = new HashSet<Vector2Int>();
       Stack<Vector2Int> pointStack = new Stack<Vector2Int>();
@@ -156,7 +193,7 @@ public class BiomeGenerator : RegionGenerator
           continue;
         }
 
-        if (heightMap[currentPoint.x, currentPoint.y] != height) // not the same height, we can ignore it
+        if (!(comparison(heightMap[currentPoint.x, currentPoint.y], height))) // if it doesn't pass our same cluster comparison, we can ignore it
         {
           continue;
         }
@@ -167,8 +204,8 @@ public class BiomeGenerator : RegionGenerator
         {
           for(int j = -1; j < 2; j++)
           {
-            Vector2Int newPoint = currentPoint + new Vector2Int(i, j);
-            if (cluster.Contains(currentPoint))
+            Vector2Int newPoint = new Vector2Int(currentPoint.x + i, currentPoint.y + j);
+            if (cluster.Contains(newPoint))
             {
               continue;
             }

@@ -31,7 +31,7 @@ public class GeneratorManager : MonoBehaviour
 
   void Start()
   {
-    regionData.seed = (int)(Random.Range(0.0f, 1.0f) * 1000000);
+    regionData.seed = 630058;// (int)(Random.Range(0.0f, 1.0f) * 1000000);
     regionData.regionDimensions = new Vector2Int(40, 40);
     regionData.zoneDimensions = new Vector2Int(24, 24);
     Debug.Log("Seed: " + regionData.seed);
@@ -93,13 +93,13 @@ public struct RegionGeneratorData
   // represents the number of total zones on the overworld map
   [DataMember]
   public Vector2Int regionDimensions;
-  // 24 is the number of tiles in a zone in DPPt
+  // 24 is the number of tiles in a zone in DPPt (I think. Could be wrong, but it seems like a reasonable baseline)
   // By assuming that each pixel is one tile, we can do exact lookups to find a tile's base height which is helpful for zone generation
   [DataMember]
   public Vector2Int zoneDimensions;
 
   [DataMember]
-  public ZoneGeneratorData[] allZoneData; // TODO: Data contracts don't support 2d arrays, so this needs to be flattened
+  public ZoneGeneratorData[] allZoneData; // flattened 2d array because data contracts don't support 2d ones
 
 
   public static bool SaveRegion(string fileName, RegionGeneratorData data)

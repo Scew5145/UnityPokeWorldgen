@@ -14,4 +14,13 @@ public class RegionGenerator
     Random.InitState(regionData.seed);
     generatedTexture = new Texture2D(regionData.regionDimensions.x * regionData.zoneDimensions.x, regionData.regionDimensions.y * regionData.zoneDimensions.y);
   }
+
+  public Vector2Int TilePositionToZone(Vector2Int TileCoordinates)
+  {
+    Vector2Int OutputCoordinates = new Vector2Int();
+    OutputCoordinates.x = TileCoordinates.x / regionData.zoneDimensions.x;
+    OutputCoordinates.y = TileCoordinates.y / regionData.zoneDimensions.y;
+
+    return OutputCoordinates;
+  }
 }
