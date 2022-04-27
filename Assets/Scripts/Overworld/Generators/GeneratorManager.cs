@@ -99,7 +99,7 @@ public struct RegionGeneratorData
   public Vector2Int zoneDimensions;
 
   [DataMember]
-  public ZoneGeneratorData[] allZoneData; // flattened 2d array because data contracts don't support 2d ones
+  public ZoneGeneratorData[] allZoneData; // flattened 2d array because data contracts don't support 2d ones (x + y*regionDimensions.x)
 
 
   public static bool SaveRegion(string fileName, RegionGeneratorData data)

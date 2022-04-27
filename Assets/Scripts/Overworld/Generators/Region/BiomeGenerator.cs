@@ -23,10 +23,10 @@ public class BiomeGenerator : RegionGenerator
     float[,] newHeightMap = BiomeFeatureIdentifier.CreateHeightMap(regionData);
 
     // Every maximal location on the map, usually mountainous 
-    //List<HashSet<Vector2Int>> maximumClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, float.MinValue,
-    //  (a, b) => { return a == b; },
-    //  (a, b) => { return a > b; },
-    //  (a, b) => { return a == b; });
+    List<HashSet<Vector2Int>> maximumClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, float.MinValue,
+      (a, b) => { return a == b; },
+      (a, b) => { return a > b; },
+      (a, b) => { return a == b; });
     //Debug.Log("Maximums Cluster count:" + maximumClusters.Count);
 
     // Every minimal location on the map, aka the water -- this is SLOW. May want to work on getting this faster
@@ -34,33 +34,66 @@ public class BiomeGenerator : RegionGenerator
       (a, b) => { return a == b; },
       (a, b) => { return a < b; },
       (a, b) => { return a == b; });
-    //Debug.Log("Water Cluster count:" + waterClusters.Count);
-    //for (int clusterIndex = 0; clusterIndex < waterClusters.Count; clusterIndex++)
-    //{
-    //  Debug.Log("Cluster " + clusterIndex + " pixel count: " + waterClusters[clusterIndex].Count);
-    //}
 
-    // all spots on the map that are > 0 and the lowest value on the map, aka the shoreline
-    //List<HashSet<Vector2Int>> landClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, 0.0f,
-    //  (a, b) => { return a > b; },
-    //  (a, b) => { return false; },
-    //  (a, b) => { return a > 0.0f; });
+    List<HashSet<Vector2Int>> landClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, 0.0f,
+      (a, b) => { return a > b; },
+      (a, b) => { return false; },
+      (a, b) => { return a > 0.0f; });
 
     waterClusters.Sort((x, y) => { return x.Count.CompareTo(y.Count); });
 
-    HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
+    // Label zones via clusters
     for (int clusterIndex = 0; clusterIndex < waterClusters.Count; clusterIndex++)
     {
-      
-      Debug.Log("Cluster " + clusterIndex + " pixel count: " + waterClusters[clusterIndex].Count);
+      HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
+      // Debug.Log("Cluster " + clusterIndex + " pixel count: " + waterClusters[clusterIndex].Count);
       foreach(Vector2Int coordinate in waterClusters[clusterIndex])
       {
-        Debug.Log(coordinate);
+        // Debug.Log(coordinate);
         zonesTouched.Add(TilePositionToZone(coordinate));
       }
       Debug.Log(zonesTouched.Count);
-      foreach(Vector2Int overworldZone in zonesTouched)
+      String tagType = clusterIndex == (waterClusters.Count - 1) ? "water_ocean" : "water_lake";
+      foreach (Vector2Int overworldZone in zonesTouched)
       {
+        regionData.allZoneData[overworldZone.x + overworldZone.y * regionData.regionDimensions.x].tags.Add(tagType);
+        Debug.Log("ZoneCoords:" + overworldZone);
+      }
+    }
+
+    landClusters.Sort((x, y) => { return x.Count.CompareTo(y.Count); });
+    for (int clusterIndex = 0; clusterIndex < landClusters.Count; clusterIndex++)
+    {
+      HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
+      // Debug.Log("Cluster " + clusterIndex + " pixel count: " + landClusters[clusterIndex].Count);
+      foreach (Vector2Int coordinate in landClusters[clusterIndex])
+      {
+        // Debug.Log(coordinate);
+        zonesTouched.Add(TilePositionToZone(coordinate));
+      }
+      Debug.Log(zonesTouched.Count);
+      String tagType = clusterIndex == (landClusters.Count - 1) ? "land_main" : "land_island";
+      foreach (Vector2Int overworldZone in zonesTouched)
+      {
+        regionData.allZoneData[overworldZone.x + overworldZone.y * regionData.regionDimensions.x].tags.Add(tagType);
+        Debug.Log("ZoneCoords:" + overworldZone);
+      }
+    }
+
+    maximumClusters.Sort((x, y) => { return x.Count.CompareTo(y.Count); });
+    for (int clusterIndex = 0; clusterIndex < maximumClusters.Count; clusterIndex++)
+    {
+      HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
+      foreach (Vector2Int coordinate in maximumClusters[clusterIndex])
+      {
+        // Debug.Log(coordinate);
+        zonesTouched.Add(TilePositionToZone(coordinate));
+      }
+      Debug.Log(zonesTouched.Count);
+      String tagType = clusterIndex == (maximumClusters.Count - 1) ? "land_main" : "land_island";
+      foreach (Vector2Int overworldZone in zonesTouched)
+      {
+        regionData.allZoneData[overworldZone.x + overworldZone.y * regionData.regionDimensions.x].tags.Add(tagType);
         Debug.Log("ZoneCoords:" + overworldZone);
       }
     }
