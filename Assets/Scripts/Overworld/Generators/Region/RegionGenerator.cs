@@ -23,4 +23,14 @@ public class RegionGenerator
 
     return OutputCoordinates;
   }
+
+  public int FlattenZoneCoordinates(Vector2Int ZoneCoordinates)
+  {
+    return ZoneCoordinates.x + (ZoneCoordinates.y * regionData.regionDimensions.x);
+  }
+
+  public ZoneGeneratorData GetZoneData(Vector2Int ZoneCoordinates)
+  {
+    return regionData.allZoneData[FlattenZoneCoordinates(ZoneCoordinates)];
+  }
 }

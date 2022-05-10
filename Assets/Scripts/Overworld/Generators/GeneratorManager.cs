@@ -31,7 +31,8 @@ public class GeneratorManager : MonoBehaviour
 
   void Start()
   {
-    regionData.seed = 630058;// (int)(Random.Range(0.0f, 1.0f) * 1000000);
+    // Important test seeds: 630058
+    regionData.seed = 630058; //(int)(Random.Range(0.0f, 1.0f) * 1000000);
     regionData.regionDimensions = new Vector2Int(40, 40);
     regionData.zoneDimensions = new Vector2Int(24, 24);
     Debug.Log("Seed: " + regionData.seed);
