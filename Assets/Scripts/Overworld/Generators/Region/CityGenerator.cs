@@ -15,6 +15,7 @@ public class CityGenerator : RegionGenerator
     cities = new List<ZoneGeneratorData>();
   }
 
+  // TODO: if I reorder BiomeGenerator & CityGenerator, I can use the land clusters instead of GatherLandBasedZones here
   public void GatherLandBasedZones()
   {
     int regionWidth = regionData.regionDimensions.x;
