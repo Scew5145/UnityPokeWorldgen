@@ -137,9 +137,6 @@
         },
         {
             "m_Id": "b5a9e481f6604fd4870bf3dc658160fc"
-        },
-        {
-            "m_Id": "e47f1195a18e4eb6bc020543ea3b31c9"
         }
     ],
     "m_GroupDatas": [
@@ -212,20 +209,6 @@
                     "m_Id": "b5a9e481f6604fd4870bf3dc658160fc"
                 },
                 "m_SlotId": 1
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
-                    "m_Id": "2e92b0a88b2e4ffbb6ad31b4852c7219"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "e47f1195a18e4eb6bc020543ea3b31c9"
-                },
-                "m_SlotId": 0
             }
         },
         {
@@ -2920,30 +2903,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
-    "m_ObjectId": "7fe0e73e450146d098e7e51d61653b34",
-    "m_Id": 0,
-    "m_DisplayName": "In",
-    "m_SlotType": 0,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "In",
-    "m_StageCapability": 3,
-    "m_Value": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0,
-        "w": 1.0
-    },
-    "m_DefaultValue": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 0.0
-    }
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "8139b76ab19a455096c9713e49603488",
     "m_Id": 5,
@@ -3037,30 +2996,6 @@
     },
     "m_Property": {
         "m_Id": "5230a4ea21c54173ad2397bcefc643de"
-    }
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
-    "m_ObjectId": "85ea72330b6c4787a71fc2c3e76de2a9",
-    "m_Id": 1,
-    "m_DisplayName": "Out",
-    "m_SlotType": 1,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "Out",
-    "m_StageCapability": 3,
-    "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 0.0
-    },
-    "m_DefaultValue": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 0.0
     }
 }
 
@@ -4040,8 +3975,8 @@
     "m_ObjectId": "d3d07c7f1a264aec908e32ec1ef888d0",
     "m_Title": "Biomes",
     "m_Position": {
-        "x": -1579.0001220703125,
-        "y": 416.9999694824219
+        "x": -1579.0,
+        "y": 417.0
     }
 }
 
@@ -4337,45 +4272,6 @@
         "addition",
         "sum",
         "plus"
-    ],
-    "m_Precision": 0,
-    "m_PreviewExpanded": false,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    }
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.OneMinusNode",
-    "m_ObjectId": "e47f1195a18e4eb6bc020543ea3b31c9",
-    "m_Group": {
-        "m_Id": "d3d07c7f1a264aec908e32ec1ef888d0"
-    },
-    "m_Name": "One Minus",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": -1230.0001220703125,
-            "y": 475.9999694824219,
-            "width": 132.0,
-            "height": 94.00003051757813
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "7fe0e73e450146d098e7e51d61653b34"
-        },
-        {
-            "m_Id": "85ea72330b6c4787a71fc2c3e76de2a9"
-        }
-    ],
-    "synonyms": [
-        "complement",
-        "invert",
-        "opposite"
     ],
     "m_Precision": 0,
     "m_PreviewExpanded": false,

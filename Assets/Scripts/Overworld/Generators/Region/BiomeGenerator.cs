@@ -9,6 +9,15 @@ public class BiomeGenerator : RegionGenerator
   {
   }
 
+  // All of the following List<HashSet<ZoneGeneratorData>> groups represent contiguous areas with a certain property (water has water, land has land, etc)
+  // Each individual HashSet is referred to as a 'cluster'.
+  // Each list is sorted by total area in pixels. It IS POSSIBLE for a zone to be in two separate clusters, and even expected in some cases,
+  // e.g. shore is always in both land and water. It is also possible for a zone to be part of 2+ clusters from the same group (e.g. the zone has both a lake and ocean in it) 
+  // No cluster is nessecarily convex.
+  public List<HashSet<ZoneGeneratorData>> waterZoneClusters = new List<HashSet<ZoneGeneratorData>>(); // ocean, lake 1, lake 2, etc.
+  public List<HashSet<ZoneGeneratorData>> landZoneClusters = new List<HashSet<ZoneGeneratorData>>(); // mainland, island 1, island 2, etc.
+  public List<HashSet<ZoneGeneratorData>> mountainZoneClusters = new List<HashSet<ZoneGeneratorData>>(); // mountaintop 1, mountaintop 2, etc.
+
   public void Generate()
   {
     // thoughts on this:
@@ -24,20 +33,20 @@ public class BiomeGenerator : RegionGenerator
     float[,] newHeightMap = BiomeFeatureIdentifier.CreateHeightMap(regionData);
 
     // Every maximal location on the map, usually mountainous 
-    Debug.Log("Doing mountain Clusters");
+    //Debug.Log("Doing mountain Clusters");
     List<HashSet<Vector2Int>> maximumClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, float.MinValue,
       (a, b) => { return a == b; },
       (a, b) => { return a > b; },
       (a, b) => { return a == b; });
 
     // Every minimal location on the map, aka the water -- this is SLOW. May want to work on getting this faster
-    Debug.Log("Doing water Clusters");
+    //Debug.Log("Doing water Clusters");
     List<HashSet<Vector2Int>> waterClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, float.MaxValue,
       (a, b) => { return a == b; },
       (a, b) => { return a < b; },
       (a, b) => { return a == b; });
 
-    Debug.Log("Doing land Clusters");
+    //Debug.Log("Doing land Clusters");
     List<HashSet<Vector2Int>> landClusters = BiomeFeatureIdentifier.FindHeightClusters(newHeightMap, 0.0f,
       (a, b) => { return a > b; },
       (a, b) => { return false; },
@@ -48,45 +57,45 @@ public class BiomeGenerator : RegionGenerator
     // Label zones via clusters
     for (int clusterIndex = 0; clusterIndex < waterClusters.Count; clusterIndex++)
     {
-      HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
-      foreach (Vector2Int coordinate in waterClusters[clusterIndex])
-      {
-        zonesTouched.Add(TilePositionToZone(coordinate));
-      }
+      HashSet<Vector2Int> zonesTouched = HeightmapClusterToZoneCluster(waterClusters[clusterIndex]);
       String tagType = clusterIndex == (waterClusters.Count - 1) ? "water_ocean" : "water_lake";
+      HashSet<ZoneGeneratorData> zoneCluster = new HashSet<ZoneGeneratorData>();
       foreach (Vector2Int overworldZone in zonesTouched)
       {
-        regionData.allZoneData[overworldZone.x + overworldZone.y * regionData.regionDimensions.x].tags.Add(tagType);
+        ZoneGeneratorData zoneData = GetZoneData(overworldZone);
+        zoneData.tags.Add(tagType);
+        zoneCluster.Add(zoneData);
       }
+      waterZoneClusters.Add(zoneCluster);
     }
 
     landClusters.Sort((x, y) => { return x.Count.CompareTo(y.Count); });
     for (int clusterIndex = 0; clusterIndex < landClusters.Count; clusterIndex++)
     {
-      HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
-      foreach (Vector2Int coordinate in landClusters[clusterIndex])
-      {
-        zonesTouched.Add(TilePositionToZone(coordinate));
-      }
+      HashSet<Vector2Int> zonesTouched = HeightmapClusterToZoneCluster(landClusters[clusterIndex]);
       String tagType = clusterIndex == (landClusters.Count - 1) ? "land_main" : "land_island";
+      HashSet<ZoneGeneratorData> zoneCluster = new HashSet<ZoneGeneratorData>();
       foreach (Vector2Int overworldZone in zonesTouched)
       {
-        regionData.allZoneData[overworldZone.x + overworldZone.y * regionData.regionDimensions.x].tags.Add(tagType);
+        ZoneGeneratorData zoneData = GetZoneData(overworldZone);
+        zoneData.tags.Add(tagType);
+        zoneCluster.Add(zoneData);
       }
+      landZoneClusters.Add(zoneCluster);
     }
 
     maximumClusters.Sort((x, y) => { return x.Count.CompareTo(y.Count); });
     for (int clusterIndex = 0; clusterIndex < maximumClusters.Count; clusterIndex++)
     {
-      HashSet<Vector2Int> zonesTouched = new HashSet<Vector2Int>();
-      foreach (Vector2Int coordinate in maximumClusters[clusterIndex])
-      {
-        zonesTouched.Add(TilePositionToZone(coordinate));
-      }
+      HashSet<Vector2Int> zonesTouched = HeightmapClusterToZoneCluster(maximumClusters[clusterIndex]);
+      HashSet<ZoneGeneratorData> zoneCluster = new HashSet<ZoneGeneratorData>();
       foreach (Vector2Int overworldZone in zonesTouched)
       {
-        regionData.allZoneData[overworldZone.x + overworldZone.y * regionData.regionDimensions.x].tags.Add("land_mountain_peak");
+        ZoneGeneratorData zoneData = GetZoneData(overworldZone);
+        zoneData.tags.Add("land_mountain_peak");
+        zoneCluster.Add(zoneData);
       }
+      mountainZoneClusters.Add(zoneCluster);
     }
 
     // Debug preview texture, just change which set of clusters are being looked at to debug them
@@ -137,6 +146,18 @@ public class BiomeGenerator : RegionGenerator
     generatedTexture.Apply();
   }
 
+  // Helper function for reduction of a set of points to a set of zones
+  public  HashSet<Vector2Int> HeightmapClusterToZoneCluster(HashSet<Vector2Int> heightMapCluster)
+  {
+    HashSet<Vector2Int> zoneCluster = new HashSet<Vector2Int>();
+    foreach(Vector2Int point in heightMapCluster)
+    {
+      Vector2Int zoneCoords = TilePositionToZone(new Vector2Int(point.x, point.y));
+      zoneCluster.Add(zoneCoords);
+    }
+    return zoneCluster;
+  }
+
   public class BiomeFeatureIdentifier
   {
     // Technically, all of this could be done just using it in the zone format, but frankly, it's easier to think about
@@ -173,7 +194,7 @@ public class BiomeGenerator : RegionGenerator
       Func<float, float, bool> iterateComparison, // iterates the previous comparison, e.g. if we find a set of pixels that are higher height then our previous
       Func<float, float, bool> sameClusterComparison) // how to determine which adjacent pixels are considered to be part of the same cluster (usually a == b)
     {
-      float frameStartTimePassing = Time.realtimeSinceStartup;
+      //float frameStartTimePassing = Time.realtimeSinceStartup;
       List<Vector2Int> passingPixels = new List<Vector2Int>();
       for (int y = 0; y < heightMap.GetLength(1); y++)
       {
@@ -192,12 +213,12 @@ public class BiomeGenerator : RegionGenerator
           }
         }
       }
-      Debug.Log("took " + (Time.realtimeSinceStartup - frameStartTimePassing) + " to find all passing pixels");
+      //Debug.Log("took " + (Time.realtimeSinceStartup - frameStartTimePassing) + " to find all passing pixels");
       HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
       List<HashSet<Vector2Int>> clusters = new List<HashSet<Vector2Int>>();
       foreach (Vector2Int point in passingPixels)
       {
-        float frameStartTime = Time.realtimeSinceStartup;
+        //float frameStartTime = Time.realtimeSinceStartup;
         if (visited.Contains(point))
         {
           continue;
@@ -208,7 +229,7 @@ public class BiomeGenerator : RegionGenerator
           visited.Add(clusteredPoint);
         }
         clusters.Add(newCluster);
-        Debug.Log("took " + (Time.realtimeSinceStartup - frameStartTime) + " to find cluster " + clusters.Count);
+        //Debug.Log("took " + (Time.realtimeSinceStartup - frameStartTime) + " to find cluster " + clusters.Count);
       }
 
 
