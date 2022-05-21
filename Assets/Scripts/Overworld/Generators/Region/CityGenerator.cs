@@ -105,7 +105,13 @@ public class CityGenerator : RegionGenerator
     validUntriedZones.AddRange(tempCities);
 
     cities = tempCities;
-    Color[] pix = new Color[generatedTexture.width * generatedTexture.height]; // This should be a greyscale texture to go fast, but... L A Z Y
+    foreach (ZoneGeneratorData city in cities)
+    {
+      // WORTH NOTING: as of 5/20/2022 BiomeGenerator searches for this tag to place urban/rural biome info. Some cities may end up as biome centers
+      city.tags.Add("city");
+    }
+
+      Color[] pix = new Color[generatedTexture.width * generatedTexture.height]; // This should be a greyscale texture to go fast, but... L A Z Y
     int y = 0;
     // Init values to black
     while (y < generatedTexture.height)

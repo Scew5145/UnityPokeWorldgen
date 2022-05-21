@@ -9,6 +9,9 @@ public class BiomeGenerator : RegionGenerator
   {
   }
 
+  // Mostly, we'll be tagging zones with "biome_" tags for use during generation.
+  // TODO: Biome percentages for secondary biome data (for blending and other stuff)
+
   // All of the following List<HashSet<ZoneGeneratorData>> groups represent contiguous areas with a certain property (water has water, land has land, etc)
   // Each individual HashSet is referred to as a 'cluster'.
   // Each list is sorted by total area in pixels. It IS POSSIBLE for a zone to be in two separate clusters, and even expected in some cases,
@@ -17,6 +20,10 @@ public class BiomeGenerator : RegionGenerator
   public List<HashSet<ZoneGeneratorData>> waterZoneClusters = new List<HashSet<ZoneGeneratorData>>(); // ocean, lake 1, lake 2, etc.
   public List<HashSet<ZoneGeneratorData>> landZoneClusters = new List<HashSet<ZoneGeneratorData>>(); // mainland, island 1, island 2, etc.
   public List<HashSet<ZoneGeneratorData>> mountainZoneClusters = new List<HashSet<ZoneGeneratorData>>(); // mountaintop 1, mountaintop 2, etc.
+
+  // Each "typeCenter" represents the middle of a cluster of zones that has its biome modified by a secondary Pokemon type.
+  // all of these are chosen as random weighted points, effectively. Some are centered on clusters (like peaks/lakes) or on cities.
+  public HashSet<ZoneGeneratorData> typeCenters = new HashSet<ZoneGeneratorData>();
 
   public void Generate()
   {
@@ -58,7 +65,7 @@ public class BiomeGenerator : RegionGenerator
     for (int clusterIndex = 0; clusterIndex < waterClusters.Count; clusterIndex++)
     {
       HashSet<Vector2Int> zonesTouched = HeightmapClusterToZoneCluster(waterClusters[clusterIndex]);
-      String tagType = clusterIndex == (waterClusters.Count - 1) ? "water_ocean" : "water_lake";
+      String tagType = clusterIndex == (waterClusters.Count - 1) ? "biome_ocean" : "biome_lake";
       HashSet<ZoneGeneratorData> zoneCluster = new HashSet<ZoneGeneratorData>();
       foreach (Vector2Int overworldZone in zonesTouched)
       {
@@ -73,7 +80,7 @@ public class BiomeGenerator : RegionGenerator
     for (int clusterIndex = 0; clusterIndex < landClusters.Count; clusterIndex++)
     {
       HashSet<Vector2Int> zonesTouched = HeightmapClusterToZoneCluster(landClusters[clusterIndex]);
-      String tagType = clusterIndex == (landClusters.Count - 1) ? "land_main" : "land_island";
+      String tagType = clusterIndex == (landClusters.Count - 1) ? "biome_land" : "biome_island";
       HashSet<ZoneGeneratorData> zoneCluster = new HashSet<ZoneGeneratorData>();
       foreach (Vector2Int overworldZone in zonesTouched)
       {
@@ -92,11 +99,33 @@ public class BiomeGenerator : RegionGenerator
       foreach (Vector2Int overworldZone in zonesTouched)
       {
         ZoneGeneratorData zoneData = GetZoneData(overworldZone);
-        zoneData.tags.Add("land_mountain_peak");
+        zoneData.tags.Add("biome_mountain_peak");
         zoneCluster.Add(zoneData);
       }
       mountainZoneClusters.Add(zoneCluster);
     }
+
+    // City tags - some will be tagged as urban, others won't. 
+    // TODO: easy optimization here at the cost of coupling CityGenerator to BiomeGenerator - recieve this list straight from CityGenerator
+    List<ZoneGeneratorData> cities = new List<ZoneGeneratorData>();
+    foreach(ZoneGeneratorData zone in regionData.allZoneData)
+    {
+      if(zone.tags.Contains("city"))
+      {
+        cities.Add(zone);
+      }
+    }
+
+    // At max, half the cities will be treated as urban
+    if(cities.Count > 0)
+    {
+      int numberOfUrbanCities = UnityEngine.Random.Range(1, cities.Count / 2);
+      for (int cityIndex = 0; cityIndex < cities.Count; cityIndex++)
+      {
+        cities[cityIndex].tags.Add((cityIndex < numberOfUrbanCities) ? "biome_city_urban" : "biome_city_rural");
+      }
+    }
+
 
     // Debug preview texture, just change which set of clusters are being looked at to debug them
     List<Color> colorList = new List<Color>();

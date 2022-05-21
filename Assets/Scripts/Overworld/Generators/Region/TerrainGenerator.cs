@@ -146,36 +146,4 @@ public class TerrainGenerator : RegionGenerator // TODO: all region generators s
       }
     }
   }
-
-  // Helper functions for ray-based masks
-  public Vector2 Normalized2D(Vector2 vector)
-  {
-    float mag = vector.magnitude;
-    if(mag > .00001 )
-    {
-        return (vector / mag);
-    }
-    return Vector2.zero;
-  }
- 
-  public Vector2 ClosestPointOnLine(Vector2 vA, Vector2 vB, Vector2 vPoint)
-  {
-    Vector2 vVector1 = vPoint - vA;
-    Vector2 vVector2 = Normalized2D(vB - vA);
-
-    float d = Vector2.Distance(vA, vB);
-    float t = Vector2.Dot(vVector2, vVector1);
-
-    if (t <= 0)
-      return vA;
-
-    if (t >= d)
-      return vB;
-
-    Vector2 vVector3 = vVector2 * t;
-
-    Vector2 vClosestPoint = vA + vVector3;
-
-    return vClosestPoint;
-  }
 }
