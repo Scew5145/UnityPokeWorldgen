@@ -106,17 +106,11 @@ public class BiomeGenerator : RegionGenerator
     }
 
     // City tags - some will be tagged as urban, others won't. 
-    // TODO: easy optimization here at the cost of coupling CityGenerator to BiomeGenerator - recieve this list straight from CityGenerator
-    List<ZoneGeneratorData> cities = new List<ZoneGeneratorData>();
-    foreach(ZoneGeneratorData zone in regionData.allZoneData)
-    {
-      if(zone.tags.Contains("city"))
-      {
-        cities.Add(zone);
-      }
-    }
+    // TODO: easy optimization here at the cost of coupling CityGenerator to BiomeGenerator more - recieve this list straight from CityGenerator
+    List<ZoneGeneratorData> cities = GatherZonesOfTag("city");
 
     // At max, half the cities will be treated as urban
+    // TODO: cities that take up more than one zone - this will need to change
     if(cities.Count > 0)
     {
       int numberOfUrbanCities = UnityEngine.Random.Range(1, cities.Count / 2);
@@ -126,6 +120,8 @@ public class BiomeGenerator : RegionGenerator
       }
     }
 
+    // Another big part of generation here, separated for the sake of my sanity
+    // PlaceSubBiomes();
 
     // Debug preview texture, just change which set of clusters are being looked at to debug them
     List<Color> colorList = new List<Color>();
@@ -173,6 +169,71 @@ public class BiomeGenerator : RegionGenerator
     }
     generatedTexture.SetPixels(pix);
     generatedTexture.Apply();
+  }
+
+  // Basic idea behind this function is pretty simple. We place a set number of 'sub-biome centers' 
+  // That inform the surrounding zones with stuff like tileset information, pokemon encounters, gym types, etc.
+  // The closer a zone is to the center of a sub-biome, the more weight that sub-biome will affect the encounters/tilesets/etc.
+  // Using Possion Disc Sampling, similar to cities, so that they aren't too closer to each other.  
+  protected void PlaceSubBiomes()
+  {
+
+    //TODO: more initialization stuff to move to an input struct for the generator
+    float subBiomePlacementRadius = 0.35f;
+    int numSubBiomes = 10;
+    int maxPlacementAttempts = 10;
+
+    List<ZoneGeneratorData> subBiomes = new List<ZoneGeneratorData>();
+    List<ZoneGeneratorData> triedZones = new List<ZoneGeneratorData>();
+    List<ZoneGeneratorData> validUntriedZones = new List<ZoneGeneratorData>();
+    float minDistanceBetweenSubBiomes = 4;
+    // TODO: gather untried zones here based on closeness to center of the map
+
+    for (int subBiomeIndex = 0; subBiomeIndex < numSubBiomes; subBiomeIndex++)
+    {
+      int attempts = 0;
+      // Attempt poisson disk sampling until we run out of attempts.
+      while (attempts <= maxPlacementAttempts)
+      {
+        if (validUntriedZones.Count == 0)
+        {
+          Debug.LogWarning("Ran out of space to place cities with good spacing! D:");
+          break;
+        }
+        int index = UnityEngine.Random.Range(0, validUntriedZones.Count);
+        // Debug.Log("Placing: " + validUntriedZones[index].OverworldCoordinates.x + " " + validUntriedZones[index].OverworldCoordinates.y);
+        float distanceFromSubBiome = float.MaxValue;
+        for (int placedIndex = 0; placedIndex < subBiomes.Count; placedIndex++)
+        {
+          ZoneGeneratorData tempPlacedBiome = subBiomes[placedIndex];
+          float distanceToPlaced = Vector2Int.Distance(validUntriedZones[index].OverworldCoordinates, tempPlacedBiome.OverworldCoordinates);
+          // Debug.Log("Checking: " + placedCity.OverworldCoordinates.x + " " + placedCity.OverworldCoordinates.y);
+          // Debug.Log(distanceToPlaced);
+          if (distanceToPlaced < distanceFromSubBiome)
+          {
+            distanceFromSubBiome = distanceToPlaced;
+          }
+        }
+        // Debug.Log(distanceFromCity);
+        if (distanceFromSubBiome <= minDistanceBetweenSubBiomes)
+        {
+          // Debug.LogWarning("Failed a placement");
+        }
+        else
+        {
+          // Found a valid cell, add it to the list of cities
+          subBiomes.Add(validUntriedZones[index]);
+          validUntriedZones.RemoveAt(index);
+          break;
+        }
+        triedZones.Add(validUntriedZones[index]);
+        validUntriedZones.RemoveAt(index);
+        attempts += 1;
+      }
+      // If we fell all the way out of the attempt cycle without finding one, we'll add it afterwards.
+      // The next city won't try the ones we've already attempted (because they're removed from validUntriedZones)
+    }
+    validUntriedZones.AddRange(triedZones); // Re-add the cities for future operations
   }
 
   // Helper function for reduction of a set of points to a set of zones

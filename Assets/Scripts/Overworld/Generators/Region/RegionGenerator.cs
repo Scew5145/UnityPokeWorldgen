@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 // base class for region-wide generator constructs. Generally in charge of generating a single feature of the biome (terrain, biome, city locations, etc)
 public class RegionGenerator
@@ -11,7 +12,7 @@ public class RegionGenerator
   public RegionGenerator(RegionGeneratorData _regionData)
   {
     regionData = _regionData;
-    Random.InitState(regionData.seed);
+    UnityEngine.Random.InitState(regionData.seed);
     generatedTexture = new Texture2D(regionData.regionDimensions.x * regionData.zoneDimensions.x, regionData.regionDimensions.y * regionData.zoneDimensions.y);
   }
 
@@ -64,5 +65,18 @@ public class RegionGenerator
     Vector2 vClosestPoint = vA + vVector3;
 
     return vClosestPoint;
+  }
+
+  public List<ZoneGeneratorData> GatherZonesOfTag(String tag)
+  {
+    List<ZoneGeneratorData> outputList = new List<ZoneGeneratorData>();
+    foreach (ZoneGeneratorData zone in regionData.allZoneData)
+    {
+      if (zone.tags.Contains(tag))
+      {
+        outputList.Add(zone);
+      }
+    }
+    return outputList;
   }
 }
