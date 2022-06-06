@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class BiomeGenerator : RegionGenerator
@@ -121,7 +122,7 @@ public class BiomeGenerator : RegionGenerator
     }
 
     // Another big part of generation here, separated for the sake of my sanity
-    // PlaceSubBiomes();
+    PlaceSubBiomes();
 
     // Debug preview texture, just change which set of clusters are being looked at to debug them
     List<Color> colorList = new List<Color>();
@@ -149,18 +150,22 @@ public class BiomeGenerator : RegionGenerator
         }*/
         Vector2Int zoneCoords = TilePositionToZone(new Vector2Int(x, y));
         ZoneGeneratorData zoneData = GetZoneData(zoneCoords);
-        if (zoneData.tags.Contains("water_ocean"))
+        if(zoneData.tags.Contains("subbiome_center"))
+        {
+          pix[x + (y * generatedTexture.width)] = Color.red;
+        }
+        /*else if (zoneData.tags.Contains("biome_ocean"))
         {
           pix[x + (y * generatedTexture.width)] = Color.blue;
         }
-        else if (zoneData.tags.Contains("water_lake"))
+        else if (zoneData.tags.Contains("biome_lake"))
         {
           pix[x + (y * generatedTexture.width)] = Color.cyan;
         }
-        else if (zoneData.tags.Contains("land_mountain_peak"))
+        else if (zoneData.tags.Contains("biome_island"))
         {
           pix[x + (y * generatedTexture.width)] = Color.yellow;
-        }
+        }*/
         else
         {
           pix[x + (y * generatedTexture.width)] = Color.white;
@@ -179,13 +184,27 @@ public class BiomeGenerator : RegionGenerator
   {
 
     //TODO: more initialization stuff to move to an input struct for the generator
-    float subBiomePlacementRadius = 0.35f;
+    float subBiomePlacementRadius = 12.0f; // units in 'zones'
     int numSubBiomes = 10;
     int maxPlacementAttempts = 10;
 
     List<ZoneGeneratorData> subBiomes = new List<ZoneGeneratorData>();
     List<ZoneGeneratorData> triedZones = new List<ZoneGeneratorData>();
     List<ZoneGeneratorData> validUntriedZones = new List<ZoneGeneratorData>();
+    Vector2Int centerPoint = new Vector2Int(regionData.regionDimensions.x / 2, regionData.regionDimensions.y / 2);
+
+    // This wonderful set of casts is just multiplying the region dimensions by the placement radius and rounding
+    Vector2Int actualRadius = new Vector2Int((int)math.round(((float)regionData.regionDimensions.x) * subBiomePlacementRadius),
+      (int)math.round(((float)regionData.regionDimensions.y) * subBiomePlacementRadius));
+    Debug.Log(actualRadius);
+    foreach (ZoneGeneratorData tempZone in regionData.allZoneData)
+    {
+      float distanceToCenter = Vector2Int.Distance(centerPoint, tempZone.OverworldCoordinates);
+      if(distanceToCenter <= subBiomePlacementRadius)
+      {
+        validUntriedZones.Add(tempZone);
+      }
+    }
     float minDistanceBetweenSubBiomes = 4;
     // TODO: gather untried zones here based on closeness to center of the map
 
@@ -197,7 +216,7 @@ public class BiomeGenerator : RegionGenerator
       {
         if (validUntriedZones.Count == 0)
         {
-          Debug.LogWarning("Ran out of space to place cities with good spacing! D:");
+          Debug.LogWarning("Ran out of space to place zones with good spacing! D:");
           break;
         }
         int index = UnityEngine.Random.Range(0, validUntriedZones.Count);
@@ -221,7 +240,7 @@ public class BiomeGenerator : RegionGenerator
         }
         else
         {
-          // Found a valid cell, add it to the list of cities
+          // Found a valid cell, add it to the list of zones
           subBiomes.Add(validUntriedZones[index]);
           validUntriedZones.RemoveAt(index);
           break;
@@ -233,7 +252,12 @@ public class BiomeGenerator : RegionGenerator
       // If we fell all the way out of the attempt cycle without finding one, we'll add it afterwards.
       // The next city won't try the ones we've already attempted (because they're removed from validUntriedZones)
     }
-    validUntriedZones.AddRange(triedZones); // Re-add the cities for future operations
+    validUntriedZones.AddRange(triedZones); // Re-add the zones for future operations
+
+    foreach(ZoneGeneratorData zone in subBiomes)
+    {
+      zone.tags.Add("subbiome_center");
+    }
   }
 
   // Helper function for reduction of a set of points to a set of zones
