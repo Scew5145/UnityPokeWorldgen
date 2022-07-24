@@ -258,6 +258,19 @@ public class BiomeGenerator : RegionGenerator
     {
       zone.tags.Add("subbiome_center");
     }
+
+    foreach(ZoneGeneratorData zone in regionData.allZoneData)
+    {
+      // Goal here is to find the three closest biome centers for each zone, and then weight that zone's biome data accordingly
+      // technically we only need to do this on actual player-accessible zones but doing it now is fine, just slower
+      foreach(ZoneGeneratorData subBiomeCenter in subBiomes)
+      {
+        if(subBiomeCenter.Equals(zone))
+        {
+          continue;
+        }
+      }
+    }
   }
 
   // Helper function for reduction of a set of points to a set of zones

@@ -72,6 +72,7 @@ public class GeneratorManager : MonoBehaviour
         GenerationFinishedEvent.Raise(this);
         currentStep = GenerationStep.Idle;
         RegionGeneratorData.SaveRegion("testRegionSave.region", regionData);
+        Debug.Log(Application.persistentDataPath);
         break;
     }
     if (currentStep != GenerationStep.Idle)
@@ -80,6 +81,10 @@ public class GeneratorManager : MonoBehaviour
     }
   }
 }
+
+// Important terms that I'll try to be as consistent as possible with:
+// if a class has "Data" in the name, that means it's instanced, for that specific runthrough of the game.
+// if a class has "Info" in the name, that means it's static, and usually loaded from a json or is a game object, or both.
 
 [DataContract(Name = "RegionGeneratorData", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
 public struct RegionGeneratorData
@@ -102,12 +107,14 @@ public struct RegionGeneratorData
   [DataMember]
   public ZoneGeneratorData[] allZoneData; // flattened 2d array because data contracts don't support 2d ones (x + y*regionDimensions.x)
 
+  [DataMember]
+  public Dictionary<string, SubBiomeGeneratorData> allBiomeData;
 
   public static bool SaveRegion(string fileName, RegionGeneratorData data)
   {
     // Create a new instance of a StreamWriter
     // to read and write the data.
-    string path = Application.persistentDataPath + fileName;
+    string path = Application.persistentDataPath + "/" + fileName;
     // Creating the directory like this will do nothing if it already exists
     string folder = Path.GetDirectoryName(path);
     Directory.CreateDirectory(folder);
@@ -121,6 +128,28 @@ public struct RegionGeneratorData
     fs.Close();
     return true;
   }
+}
+
+// TODO: construct these based on scriptable objects with things like type info, tileset info, etc.
+// each item in the scriptable object should be static, and have its data accessible via the biomeName
+[DataContract(Name = "SubBiomeGeneratorData", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
+public struct SubBiomeGeneratorData
+{
+  public string biomeName;
+
+  //public TilesetExtensionInfo
+}
+
+
+[DataContract(Name = "SubBiomeZoneData", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
+public struct SubBiomeZoneData
+{
+  [DataMember]
+  public Vector2Int biomeCenterOverworldCoordinates;
+
+  [DataMember]
+  public string biomeName;
+  // TODO: encounter data needs to reference the subbiome, but should be stored in ZoneGeneratorData, probably via biomeName
 }
 
 [DataContract(Name = "ZoneGeneratorData", Namespace = "http://schemas.datacontract.org/2004/07/UnityEngine")]
@@ -142,6 +171,9 @@ public struct ZoneGeneratorData
   [DataMember]
   public string layer;
   [DataMember]
-  public List<string> tags; // for zonewide metadata, E.G. "land" for zones that are primarily land
+  public HashSet<string> tags; // for zonewide metadata, E.G. "land" for zones that are primarily land
 
+  // SubBiomes consist of generator data and a weight for this specific zone. Sorted Highest weight to lowest
+  [DataMember]
+  List<KeyValuePair<SubBiomeZoneData, float>> SubBiomes;
 }

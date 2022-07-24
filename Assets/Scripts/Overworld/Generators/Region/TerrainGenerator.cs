@@ -133,7 +133,7 @@ public class TerrainGenerator : RegionGenerator // TODO: all region generators s
         }
         if(regionData.allZoneData[i + j*regionData.regionDimensions.x].tags == null)
         {
-          regionData.allZoneData[i + j*regionData.regionDimensions.x].tags = new List<string>();
+          regionData.allZoneData[i + j*regionData.regionDimensions.x].tags = new HashSet<string>();
         }
         if(tilesInZone/2 <= tilesOfLandInZone)
         {
